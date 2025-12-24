@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Camera } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { User, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 
 interface ProfileHeaderProps {
@@ -14,39 +14,95 @@ interface ProfileHeaderProps {
 }
 
 /**
- * ProfileHeader - Fixed header with contentEditable inline editing
+ * ProfileHeader - Clean header with click-to-upload profile picture
  */
 export default function ProfileHeader({ profileOwner, isEditable }: ProfileHeaderProps) {
     const [profileData, setProfileData] = useState({
         name: profileOwner.username,
         bio: 'Add your bio here...',
         title: 'Your Title',
-        avatar: 'https://i.pravatar.cc/150',
+        avatar: '', // Empty by default
     });
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleBlur = async (field: string, value: string) => {
         // TODO: Save to database
         console.log('Saving:', field, value);
     };
 
+    const handleAvatarClick = () => {
+        if (isEditable && fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setProfileData(prev => ({
+                ...prev,
+                avatar: reader.result as string,
+            }));
+            // TODO: Upload to server
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleDeleteAvatar = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setProfileData(prev => ({
+            ...prev,
+            avatar: '',
+        }));
+        // TODO: Delete from server
+    };
+
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        <div className="bg-white rounded-2xl p-8">
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-                {/* Profile Picture */}
+                {/* Profile Picture - Click to upload */}
                 <div className="relative group">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-100 shadow-lg">
-                        <Image
-                            src={profileData.avatar}
-                            alt={profileData.name}
-                            width={128}
-                            height={128}
-                            className="object-cover"
-                        />
+                    <div
+                        className={`w-32 h-32 rounded-full overflow-hidden shadow-lg bg-gray-100 flex items-center justify-center ${isEditable ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''
+                            }`}
+                        onClick={handleAvatarClick}
+                    >
+                        {profileData.avatar ? (
+                            <Image
+                                src={profileData.avatar}
+                                alt={profileData.name}
+                                width={128}
+                                height={128}
+                                className="object-cover w-full h-full"
+                            />
+                        ) : (
+                            <User size={48} className="text-gray-400" />
+                        )}
                     </div>
-                    {isEditable && (
-                        <button className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                            <Camera size={18} className="text-gray-600" />
+
+                    {/* Delete button - only show when image exists and in edit mode */}
+                    {isEditable && profileData.avatar && (
+                        <button
+                            onClick={handleDeleteAvatar}
+                            className="absolute top-0 right-0 p-2 bg-white rounded-full shadow-lg text-gray-600 hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+                            title="Remove picture"
+                        >
+                            <Trash2 size={16} />
                         </button>
+                    )}
+
+                    {/* Hidden file input */}
+                    {isEditable && (
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                        />
                     )}
                 </div>
 
@@ -84,12 +140,6 @@ export default function ProfileHeader({ profileOwner, isEditable }: ProfileHeade
                     >
                         {profileData.bio}
                     </p>
-
-                    {isEditable && (
-                        <p className="text-xs text-gray-400 mt-2">
-                            💡 Click on any text to edit
-                        </p>
-                    )}
                 </div>
             </div>
         </div>

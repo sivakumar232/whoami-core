@@ -5,6 +5,7 @@ import GridLayout from 'react-grid-layout';
 import { useWidgetStore } from '@/lib/useWidgetStore';
 import WidgetWrapper from './WidgetWrapper';
 import WidgetRenderer from './widgets/WidgetRenderer';
+import { Palette, Package } from 'lucide-react';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -64,9 +65,7 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
 
     // Handle widget deletion
     const handleDelete = (widgetId: string) => {
-        if (confirm('Are you sure you want to delete this widget?')) {
-            deleteWidget(widgetId);
-        }
+        deleteWidget(widgetId);
     };
 
     // Enhanced empty state
@@ -74,27 +73,25 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center space-y-4 max-w-md">
-                    <div className="text-6xl mb-4">
-                        {isEditable ? '🎨' : '📭'}
+                    <div className="flex justify-center mb-4">
+                        {isEditable ? (
+                            <Palette className="w-16 h-16 text-gray-400" />
+                        ) : (
+                            <Package className="w-16 h-16 text-gray-400" />
+                        )}
                     </div>
-                    <h3 className="text-2xl font-bold text-white">
+                    <h3 className="text-2xl font-bold text-gray-900">
                         {isEditable ? 'Start Building Your Portfolio' : 'No Widgets Yet'}
                     </h3>
-                    <p className="text-white/60">
+                    <p className="text-gray-600">
                         {isEditable ? (
                             <>
-                                Click the <span className="text-blue-400 font-semibold">+ button</span> in the bottom-right corner to add your first widget
+                                Use the bottom navigation to add your first widget
                             </>
                         ) : (
                             'This portfolio is empty. Check back later!'
                         )}
                     </p>
-                    {isEditable && (
-                        <div className="pt-4 space-y-2 text-sm text-white/50">
-                            <p>💡 Tip: You can add Bio, Projects, Skills, and more</p>
-                            <p>🎯 Drag widgets to rearrange them</p>
-                        </div>
-                    )}
                 </div>
             </div>
         );

@@ -14,28 +14,28 @@ import ContactWidget from './ContactWidget';
 
 interface WidgetRendererProps {
     widget: Widget;
+    isEditable?: boolean;
 }
 
 /**
  * WidgetRenderer - Factory component that renders the correct widget type
- * based on widget.type
  */
-export default function WidgetRenderer({ widget }: WidgetRendererProps) {
+export default function WidgetRenderer({ widget, isEditable }: WidgetRendererProps) {
     switch (widget.type) {
         case WidgetType.BIO:
-            return <BioWidget data={widget.data as any} />;
+            return <BioWidget data={widget.data as any} isEditable={isEditable} />;
 
         case WidgetType.PROJECT:
-            return <ProjectWidget data={widget.data as any} />;
+            return <ProjectWidget data={widget.data as any} isEditable={isEditable} />;
 
         case WidgetType.GITHUB:
             return <GithubWidget data={widget.data as any} />;
 
         case WidgetType.IMAGE:
-            return <ImageWidget data={widget.data as any} />;
+            return <ImageWidget data={widget.data as any} isEditable={isEditable} widgetId={widget.id} />;
 
         case WidgetType.LINK:
-            return <LinkWidget data={widget.data as any} />;
+            return <LinkWidget data={widget.data as any} isEditable={isEditable} widgetId={widget.id} />;
 
         case WidgetType.SOCIAL:
             return <SocialWidget data={widget.data as any} />;
@@ -54,7 +54,7 @@ export default function WidgetRenderer({ widget }: WidgetRendererProps) {
 
         default:
             return (
-                <div className="flex items-center justify-center h-full text-white/50">
+                <div className="flex items-center justify-center h-full text-gray-500">
                     <p>Unknown widget type: {widget.type}</p>
                 </div>
             );
