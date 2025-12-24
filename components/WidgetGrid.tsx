@@ -69,13 +69,31 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
         }
     };
 
+    // Enhanced empty state
     if (widgets.length === 0) {
         return (
-            <div className="flex items-center justify-center min-h-[400px] text-white/50">
-                <div className="text-center space-y-2">
-                    <p className="text-lg">No widgets yet</p>
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="text-center space-y-4 max-w-md">
+                    <div className="text-6xl mb-4">
+                        {isEditable ? '🎨' : '📭'}
+                    </div>
+                    <h3 className="text-2xl font-bold text-white">
+                        {isEditable ? 'Start Building Your Portfolio' : 'No Widgets Yet'}
+                    </h3>
+                    <p className="text-white/60">
+                        {isEditable ? (
+                            <>
+                                Click the <span className="text-blue-400 font-semibold">+ button</span> in the bottom-right corner to add your first widget
+                            </>
+                        ) : (
+                            'This portfolio is empty. Check back later!'
+                        )}
+                    </p>
                     {isEditable && (
-                        <p className="text-sm">Add widgets to customize your portfolio</p>
+                        <div className="pt-4 space-y-2 text-sm text-white/50">
+                            <p>💡 Tip: You can add Bio, Projects, Skills, and more</p>
+                            <p>🎯 Drag widgets to rearrange them</p>
+                        </div>
                     )}
                 </div>
             </div>
