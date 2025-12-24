@@ -45,10 +45,10 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
     }, [widgets]);
 
     // Handle layout change (drag/resize)
-    const handleLayoutChange = (newLayout: any[]) => {
-        if (!isEditable) return;
+    const handleLayoutChange = (newLayout: any) => {
+        if (!isEditable || !Array.isArray(newLayout)) return;
 
-        newLayout.forEach((item) => {
+        newLayout.forEach((item: any) => {
             const widget = widgets.find((w) => w.id === item.i);
             if (widget && (widget.x !== item.x || widget.y !== item.y || widget.w !== item.w || widget.h !== item.h)) {
                 // Update position and size
@@ -102,10 +102,10 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
 
     return (
         <div className="w-full">
+            {/* @ts-ignore - react-grid-layout types are incomplete */}
             <GridLayout
                 className="layout"
                 layout={layout}
-                cols={12}
                 rowHeight={100}
                 width={1200}
                 isDraggable={isEditable}
@@ -123,7 +123,7 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
                             isEditable={isEditable}
                             onDelete={() => handleDelete(widget.id)}
                         >
-                            <WidgetRenderer widget={widget} />
+                            <WidgetRenderer widget={widget} isEditable={isEditable} />
                         </WidgetWrapper>
                     </div>
                 ))}

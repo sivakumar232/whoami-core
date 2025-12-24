@@ -1,38 +1,51 @@
 'use client';
 
 import { ProjectWidgetData } from '@/lib/types';
+import { Github, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
-import { ExternalLink, Github } from 'lucide-react';
 
 interface ProjectWidgetProps {
     data: ProjectWidgetData;
+    isEditable?: boolean;
 }
 
-/**
- * ProjectWidget - Showcases a project with image, title, description, tags, and links
- */
-export default function ProjectWidget({ data }: ProjectWidgetProps) {
+export default function ProjectWidget({ data, isEditable }: ProjectWidgetProps) {
     return (
-        <div className="flex flex-col h-full space-y-3">
+        <div className="space-y-4">
             {/* Project Image */}
             {data.imageUrl && (
-                <div className="relative w-full h-32 rounded-lg overflow-hidden bg-white/5">
+                <div className="w-full h-40 rounded-lg overflow-hidden bg-gray-100">
                     <Image
                         src={data.imageUrl}
                         alt={data.title}
-                        fill
-                        className="object-cover"
+                        width={400}
+                        height={160}
+                        className="w-full h-full object-cover"
                     />
                 </div>
             )}
 
-            {/* Title */}
-            <h3 className="text-xl font-bold text-white">
+            {/* Title - editable with cursor */}
+            <h3
+                className={`text-xl font-bold text-gray-900 ${isEditable ? 'cursor-text hover:bg-gray-50 rounded px-2 -mx-2' : ''
+                    }`}
+                style={{ outline: 'none', border: 'none' }}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                data-field="title"
+            >
                 {data.title}
             </h3>
 
-            {/* Description */}
-            <p className="text-white/70 text-sm flex-grow">
+            {/* Description - editable with cursor */}
+            <p
+                className={`text-gray-600 text-sm leading-relaxed ${isEditable ? 'cursor-text hover:bg-gray-50 rounded px-2 -mx-2' : ''
+                    }`}
+                style={{ outline: 'none', border: 'none' }}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                data-field="description"
+            >
                 {data.description}
             </p>
 
@@ -42,7 +55,7 @@ export default function ProjectWidget({ data }: ProjectWidgetProps) {
                     {data.tags.map((tag, index) => (
                         <span
                             key={index}
-                            className="px-2 py-1 text-xs rounded-full bg-white/10 text-white/90 border border-white/20"
+                            className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
                         >
                             {tag}
                         </span>
@@ -51,30 +64,36 @@ export default function ProjectWidget({ data }: ProjectWidgetProps) {
             )}
 
             {/* Links */}
-            <div className="flex gap-2">
-                {data.demoUrl && (
-                    <a
-                        href={data.demoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg bg-blue-500/80 hover:bg-blue-600 text-white transition-colors"
-                    >
-                        <ExternalLink size={14} />
-                        Demo
-                    </a>
-                )}
+            <div className="flex gap-3">
                 {data.githubUrl && (
                     <a
                         href={data.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg bg-gray-700/80 hover:bg-gray-800 text-white transition-colors"
+                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
                     >
-                        <Github size={14} />
-                        Code
+                        <Github size={16} />
+                        <span>Code</span>
+                    </a>
+                )}
+                {data.demoUrl && (
+                    <a
+                        href={data.demoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                    >
+                        <ExternalLink size={16} />
+                        <span>Demo</span>
                     </a>
                 )}
             </div>
+
+            {isEditable && (
+                <p className="text-xs text-gray-400">
+                    💡 Click text to edit
+                </p>
+            )}
         </div>
     );
 }

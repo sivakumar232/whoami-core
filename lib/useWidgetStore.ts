@@ -189,7 +189,12 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
      * Convenience method that calls updateWidget
      */
     moveWidget: async (id: string, x: number, y: number) => {
-        return get().updateWidget(id, { x, y });
+        try {
+            return await get().updateWidget(id, { x, y });
+        } catch (error) {
+            // Error already handled in updateWidget, just log it
+            console.error('Failed to move widget:', error);
+        }
     },
 
     /**
@@ -197,7 +202,12 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
      * Convenience method that calls updateWidget
      */
     resizeWidget: async (id: string, w: number, h: number) => {
-        return get().updateWidget(id, { w, h });
+        try {
+            return await get().updateWidget(id, { w, h });
+        } catch (error) {
+            // Error already handled in updateWidget, just log it
+            console.error('Failed to resize widget:', error);
+        }
     },
 
     /**
