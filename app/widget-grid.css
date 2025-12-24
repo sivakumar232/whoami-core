@@ -1,0 +1,128 @@
+/* Custom styles for react-grid-layout */
+
+/* Grid item styling */
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top, width, height;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform, width, height;
+}
+
+/* Dragging state */
+.react-grid-item.react-draggable-dragging {
+  transition: none;
+  z-index: 100;
+  will-change: transform;
+}
+
+/* Resizing state */
+.react-grid-item.resizing {
+  transition: none;
+  z-index: 100;
+  will-change: transform, width, height;
+}
+
+/* Placeholder while dragging */
+.react-grid-placeholder {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  opacity: 0.5;
+  transition-duration: 100ms;
+  z-index: 2;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+/* Resize handle */
+.react-resizable-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  background: transparent;
+}
+
+.react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 0 0 4px 0;
+}
+
+.react-resizable-handle:hover::after {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Hide resize handle in view mode */
+.react-grid-item.react-grid-item.static .react-resizable-handle {
+  display: none;
+}
+
+/* Smooth animations */
+.react-grid-item > .react-resizable-handle::after {
+  transition: border-color 200ms ease;
+}
+
+/* Grid layout container */
+.react-grid-layout {
+  position: relative;
+  transition: height 200ms ease;
+}
+
+/* Prevent text selection while dragging */
+.react-grid-item.react-draggable-dragging * {
+  user-select: none;
+}
+
+/* Custom cursor while dragging */
+.react-grid-item.react-draggable-dragging {
+  cursor: grabbing !important;
+}
+
+.react-grid-item:not(.react-draggable-dragging) {
+  cursor: grab;
+}
+
+.react-grid-item.static {
+  cursor: default;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .react-grid-item {
+    margin-bottom: 1rem;
+  }
+  
+  .react-resizable-handle {
+    display: none;
+  }
+}
+
+/* Animation for new items */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.react-grid-item {
+  animation: fadeInScale 300ms ease-out;
+}

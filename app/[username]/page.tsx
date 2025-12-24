@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/db'
 import { currentUser } from '@clerk/nextjs/server'
 import { notFound } from 'next/navigation'
+import WidgetGrid from '@/components/WidgetGrid'
+import '../widget-grid.css'
 
 interface PageProps {
     params: Promise<{ username: string }>
@@ -30,30 +32,19 @@ export default async function UserProfilePage({ params }: PageProps) {
                 {/* Header */}
                 <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 mb-8 shadow-2xl">
                     <h1 className="text-4xl font-bold text-white mb-2">
-                        Welcome to {profileOwner.username}'s Profile! 👋
+                        {profileOwner.username}'s Portfolio 🎨
                     </h1>
                     <p className="text-gray-300">
                         {isEditable ? (
-                            <span className="text-green-400">✏️ You are viewing your own profile (Edit mode will be available in Step 4)</span>
+                            <span className="text-green-400">✏️ Edit mode: Drag widgets to rearrange</span>
                         ) : (
-                            <span>Viewing as a guest</span>
+                            <span>Viewing {profileOwner.username}'s portfolio</span>
                         )}
                     </p>
                 </div>
 
-                {/* Placeholder for widgets grid (Step 3) */}
-                <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl">
-                    <h2 className="text-2xl font-semibold text-white mb-4">Portfolio Grid</h2>
-                    <p className="text-gray-300">
-                        The widget grid will appear here in Step 3. For now, this confirms that:
-                    </p>
-                    <ul className="list-disc list-inside text-gray-300 mt-4 space-y-2">
-                        <li>✅ Dynamic routing is working (URL: /{username})</li>
-                        <li>✅ User data is being fetched from the database</li>
-                        <li>✅ Ownership detection is functional</li>
-                        <li>⏳ Widget system coming in Step 2-3</li>
-                    </ul>
-                </div>
+                {/* Widget Grid */}
+                <WidgetGrid userId={profileOwner.id} isEditable={isEditable} />
             </div>
         </div>
     )
