@@ -120,9 +120,13 @@ export async function PUT(request: NextRequest) {
     try {
         // Verify authentication
         const { userId: clerkId } = await auth();
+
+        console.log('[PUT /api/widgets] Auth check:', { clerkId });
+
         if (!clerkId) {
+            console.error('[PUT /api/widgets] Unauthorized - no clerkId');
             return NextResponse.json(
-                { error: 'Unauthorized' },
+                { error: 'Unauthorized - Please sign in' },
                 { status: 401 }
             );
         }
@@ -130,7 +134,10 @@ export async function PUT(request: NextRequest) {
         const body = await request.json();
         const { id, ...updates } = body;
 
+        console.log('[PUT /api/widgets] Request:', { id, updates });
+
         if (!id) {
+            console.error('[PUT /api/widgets] Missing widget ID');
             return NextResponse.json(
                 { error: 'Widget ID is required' },
                 { status: 400 }
@@ -143,7 +150,15 @@ export async function PUT(request: NextRequest) {
             include: { user: true },
         });
 
+        console.log('[PUT /api/widgets] Existing widget:', {
+            found: !!existingWidget,
+            widgetUserId: existingWidget?.userId,
+            userClerkId: existingWidget?.user?.clerkId,
+            requestClerkId: clerkId,
+        });
+
         if (!existingWidget) {
+            console.error('[PUT /api/widgets] Widget not found:', id);
             return NextResponse.json(
                 { error: 'Widget not found' },
                 { status: 404 }
@@ -151,6 +166,7 @@ export async function PUT(request: NextRequest) {
         }
 
         if (existingWidget.user.clerkId !== clerkId) {
+            console.error('[PUT /api/widgets] Forbidden - ownership mismatch');
             return NextResponse.json(
                 { error: 'Forbidden: You can only update your own widgets' },
                 { status: 403 }
@@ -163,11 +179,12 @@ export async function PUT(request: NextRequest) {
             data: updates,
         });
 
+        console.log('[PUT /api/widgets] Success:', widget.id);
         return NextResponse.json({ widget });
     } catch (error) {
-        console.error('Error updating widget:', error);
+        console.error('[PUT /api/widgets] Error:', error);
         return NextResponse.json(
-            { error: 'Failed to update widget' },
+            { error: error instanceof Error ? error.message : 'Failed to update widget' },
             { status: 500 }
         );
     }

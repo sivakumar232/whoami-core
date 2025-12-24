@@ -39,41 +39,9 @@
   user-select: none;
 }
 
-/* Resize handle */
+/* Resize handle - hidden since we use preset sizes only */
 .react-resizable-handle {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  bottom: 0;
-  right: 0;
-  cursor: se-resize;
-  background: transparent;
-}
-
-.react-resizable-handle::after {
-  content: "";
-  position: absolute;
-  right: 3px;
-  bottom: 3px;
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid rgba(255, 255, 255, 0.4);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 0 0 4px 0;
-}
-
-.react-resizable-handle:hover::after {
-  border-color: rgba(255, 255, 255, 0.8);
-}
-
-/* Hide resize handle in view mode */
-.react-grid-item.react-grid-item.static .react-resizable-handle {
-  display: none;
-}
-
-/* Smooth animations */
-.react-grid-item>.react-resizable-handle::after {
-  transition: border-color 200ms ease;
+  display: none !important;
 }
 
 /* Grid layout container */

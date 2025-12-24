@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
  * Persists to localStorage and provides keyboard shortcut
  */
 export function useEditMode(isOwner: boolean) {
-    const [isEditMode, setIsEditMode] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(isOwner); // Default to true for owners
 
     // Load edit mode from localStorage on mount
     useEffect(() => {

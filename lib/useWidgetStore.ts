@@ -132,7 +132,15 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
                 body: JSON.stringify({ id, ...updates }),
             });
 
-            if (!response.ok) throw new Error('Failed to update widget');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                console.error('Widget update failed:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    error: errorData,
+                });
+                throw new Error(`Failed to update widget: ${errorData.error || response.statusText}`);
+            }
 
             const data = await response.json();
 
@@ -144,12 +152,14 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
                 error: null,
             }));
         } catch (error) {
+            console.error('Failed to update widget:', error);
             // Rollback on error
             set({
                 widgets: previousWidgets,
                 error: error instanceof Error ? error.message : 'Unknown error',
             });
-            throw error;
+            // Don't throw - just log the error to avoid breaking the UI
+            console.warn('Widget update failed, changes reverted');
         }
     },
 

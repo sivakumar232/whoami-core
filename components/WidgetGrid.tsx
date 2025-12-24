@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import GridLayout from 'react-grid-layout';
 import { useWidgetStore } from '@/lib/useWidgetStore';
 import WidgetWrapper from './WidgetWrapper';
@@ -15,16 +15,18 @@ interface WidgetGridProps {
 }
 
 /**
- * WidgetGrid - Main grid container with drag-and-drop support
+ * WidgetGrid - Bento.me-style grid with drag-and-drop
  * 
  * Features:
- * - Responsive grid layout (12 columns)
+ * - 4-column bento.me grid layout
+ * - Locked-ratio resizing (preset sizes only)
  * - Drag and drop in edit mode
  * - Auto-saves position changes
- * - Breakpoints for mobile, tablet, desktop
+ * - Vertical compaction (top-gravity)
  */
 export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
     const { widgets, fetchWidgets, moveWidget, resizeWidget, deleteWidget } = useWidgetStore();
+    const isInternalUpdate = useRef(false);
 
     // Fetch widgets on mount
     useEffect(() => {
@@ -41,13 +43,28 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
             h: widget.h,
             minW: 1,
             minH: 1,
-            maxW: 12,
+            maxW: 4, // 4-column grid
         }));
     }, [widgets]);
 
     // Handle layout change (drag/resize)
     const handleLayoutChange = (newLayout: any) => {
-        if (!isEditable || !Array.isArray(newLayout)) return;
+        if (!isEditable || !Array.isArray(newLayout) || isInternalUpdate.current) return;
+
+        // Check if there are actual changes
+        let hasChanges = false;
+
+        newLayout.forEach((item: any) => {
+            const widget = widgets.find((w) => w.id === item.i);
+            if (widget && (widget.x !== item.x || widget.y !== item.y || widget.w !== item.w || widget.h !== item.h)) {
+                hasChanges = true;
+            }
+        });
+
+        if (!hasChanges) return;
+
+        // Mark as internal update to prevent loop
+        isInternalUpdate.current = true;
 
         newLayout.forEach((item: any) => {
             const widget = widgets.find((w) => w.id === item.i);
@@ -61,6 +78,11 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
                 }
             }
         });
+
+        // Reset flag after updates
+        setTimeout(() => {
+            isInternalUpdate.current = false;
+        }, 100);
     };
 
     // Handle widget deletion
@@ -98,20 +120,22 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
     }
 
     return (
-        <div className="w-full">
+        <div className="w-full max-w-[800px] mx-auto">
             {/* @ts-ignore - react-grid-layout types are incomplete */}
             <GridLayout
                 className="layout"
                 layout={layout}
-                rowHeight={100}
-                width={1200}
+                cols={4}
+                rowHeight={188}
+                width={800}
                 isDraggable={isEditable}
-                isResizable={isEditable}
+                isResizable={false}
                 onLayoutChange={handleLayoutChange}
                 draggableHandle=".widget-wrapper"
                 margin={[16, 16]}
                 containerPadding={[0, 0]}
-                compactType={null}
+                compactType="vertical"
+                preventCollision={false}
             >
                 {widgets.map((widget) => (
                     <div key={widget.id}>
