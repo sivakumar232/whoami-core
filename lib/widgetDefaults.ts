@@ -13,9 +13,9 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
         w: 6,  // Hero size in 12-column grid
         h: 4,
         data: {
-            title: 'Your Title',
-            description: 'Tell visitors about yourself...',
-            avatar: 'https://i.pravatar.cc/150',
+            title: 'Full-Stack Developer',
+            description: 'I build modern web applications with React, Node.js, and cloud technologies. Passionate about creating intuitive user experiences and scalable systems.',
+            avatar: 'https://i.pravatar.cc/150?img=33',
         },
     },
 
@@ -24,11 +24,12 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
         w: 4,  // Standard size
         h: 3,
         data: {
-            title: 'Project Name',
-            description: 'Describe your amazing project...',
-            tags: ['React', 'TypeScript'],
-            githubUrl: '',
-            demoUrl: '',
+            title: 'E-Commerce Platform',
+            description: 'A full-stack e-commerce platform built with React, Node.js, and Stripe. Features include product management, cart functionality, and secure payments.',
+            tags: ['React', 'Node.js', 'Stripe', 'PostgreSQL'],
+            githubUrl: 'https://github.com/yourusername/ecommerce',
+            demoUrl: 'https://demo.example.com',
+            imageUrl: 'https://images.unsplash.com/photo-1557821552-17105176677c?w=800',
         },
     },
 
@@ -39,7 +40,8 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
         data: {
             username: 'yourusername',
             showStats: true,
-            showRepos: false,
+            showRepos: true,
+            repoCount: 5,
         },
     },
 
@@ -48,9 +50,9 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
         w: 4,  // Standard size
         h: 3,
         data: {
-            url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500',
-            alt: 'Placeholder image',
-            caption: 'Add a caption...',
+            url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800',
+            alt: 'Workspace setup with laptop and coffee',
+            caption: 'My daily workspace',
         },
     },
 
@@ -59,10 +61,10 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
         w: 2,  // Mini size
         h: 2,
         data: {
-            title: 'Useful Link',
-            url: 'https://example.com',
-            description: 'Link description...',
-            icon: '🔗',
+            title: 'Portfolio',
+            url: 'https://yourportfolio.com',
+            description: 'Check out my full portfolio',
+            icon: '🌐',
         },
     },
 
@@ -82,11 +84,14 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
         w: 3,  // Compact size
         h: 2,
         data: {
-            title: 'Skills',
+            title: 'Technical Skills',
             skills: [
                 { name: 'React', level: 90, category: 'Frontend' },
-                { name: 'Node.js', level: 85, category: 'Backend' },
-                { name: 'TypeScript', level: 88, category: 'Language' },
+                { name: 'TypeScript', level: 85, category: 'Language' },
+                { name: 'Node.js', level: 88, category: 'Backend' },
+                { name: 'PostgreSQL', level: 75, category: 'Database' },
+                { name: 'AWS', level: 70, category: 'Cloud' },
+                { name: 'Docker', level: 80, category: 'DevOps' },
             ],
         },
     },
@@ -96,11 +101,12 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
         w: 4,  // Standard size
         h: 3,
         data: {
-            company: 'Company Name',
-            position: 'Your Position',
-            startDate: new Date().toISOString(),
-            description: 'Describe your role and achievements...',
-            technologies: ['React', 'Node.js'],
+            company: 'Tech Startup Inc.',
+            position: 'Senior Full-Stack Developer',
+            startDate: '2022-01-01',
+            endDate: null, // Current job
+            description: 'Led development of core platform features, mentored junior developers, and improved system performance by 40%. Built scalable microservices architecture.',
+            technologies: ['React', 'Node.js', 'AWS', 'PostgreSQL'],
         },
     },
 
@@ -109,12 +115,12 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
         w: 4,  // Standard size
         h: 3,
         data: {
-            institution: 'University Name',
+            institution: 'University of Technology',
             degree: 'Bachelor of Science',
             field: 'Computer Science',
-            startDate: '2020-09-01',
-            endDate: '2024-05-01',
-            description: 'Additional details...',
+            startDate: '2018-09-01',
+            endDate: '2022-05-01',
+            description: 'Graduated with honors. Focus on software engineering, algorithms, and distributed systems.',
         },
     },
 
@@ -123,10 +129,10 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
         w: 4,  // Standard size
         h: 2,
         data: {
-            email: 'your.email@example.com',
+            email: 'hello@example.com',
             phone: '+1 (555) 123-4567',
-            location: 'City, Country',
-            availability: 'Available for opportunities',
+            location: 'San Francisco, CA',
+            availability: 'Open to new opportunities',
         },
     },
 };

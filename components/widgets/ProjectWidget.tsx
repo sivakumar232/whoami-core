@@ -8,12 +8,15 @@ interface ProjectWidgetProps {
     data: ProjectWidgetData;
     isEditable?: boolean;
     size?: 'square' | 'rectangle' | 'vertical' | 'hero';
+    w?: number;
+    h?: number;
 }
 
 /**
- * ProjectWidget - Size-aware project display
+ * ProjectWidget - Neo-Brutalism styled project display
+ * Properly spaced with bold typography and theme colors
  */
-export default function ProjectWidget({ data, isEditable, size = 'rectangle' }: ProjectWidgetProps) {
+export default function ProjectWidget({ data, isEditable, size = 'rectangle', w, h }: ProjectWidgetProps) {
     // Size-specific rendering
     const isSquare = size === 'square';
     const isRectangle = size === 'rectangle';
@@ -21,10 +24,10 @@ export default function ProjectWidget({ data, isEditable, size = 'rectangle' }: 
     const isHero = size === 'hero';
 
     return (
-        <div className="h-full w-full flex flex-col">
+        <div className="h-full w-full flex flex-col p-6">
             {/* Image - only in vertical and hero */}
             {(isVertical || isHero) && data.imageUrl && (
-                <div className={`w-full ${isHero ? 'h-48' : 'h-32'} rounded-lg overflow-hidden bg-gray-100 mb-4 flex-shrink-0`}>
+                <div className={`w-full ${isHero ? 'h-48' : 'h-32'} rounded-xl overflow-hidden bg-gray-100 mb-4 flex-shrink-0 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
                     <Image
                         src={data.imageUrl}
                         alt={data.title}
@@ -39,10 +42,10 @@ export default function ProjectWidget({ data, isEditable, size = 'rectangle' }: 
             <div className="flex-1 min-h-0 flex flex-col">
                 {/* Title */}
                 <h3
-                    className={`font-bold text-gray-900 ${isSquare ? 'text-sm line-clamp-2' :
-                            isRectangle ? 'text-base line-clamp-1' :
-                                'text-xl line-clamp-2'
-                        } ${isEditable ? 'cursor-text hover:bg-gray-50 rounded px-2 -mx-2' : ''}`}
+                    className={`font-black text-gray-900 leading-tight ${isSquare ? 'text-lg line-clamp-2' :
+                            isRectangle ? 'text-xl line-clamp-1' :
+                                'text-2xl line-clamp-2'
+                        } ${isEditable ? 'cursor-text hover:bg-neo-volt/20 rounded-lg px-3 py-1 -mx-3 -my-1 transition-colors' : ''}`}
                     style={{ outline: 'none', border: 'none' }}
                     contentEditable={isEditable}
                     suppressContentEditableWarning
@@ -54,10 +57,10 @@ export default function ProjectWidget({ data, isEditable, size = 'rectangle' }: 
                 {/* Description - hide in square */}
                 {!isSquare && (
                     <p
-                        className={`text-gray-600 mt-2 ${isRectangle ? 'text-sm line-clamp-2' :
+                        className={`text-gray-700 mt-3 leading-relaxed font-medium ${isRectangle ? 'text-sm line-clamp-2' :
                                 isVertical ? 'text-sm line-clamp-3' :
-                                    'text-sm line-clamp-4'
-                            } ${isEditable ? 'cursor-text hover:bg-gray-50 rounded px-2 -mx-2' : ''}`}
+                                    'text-base line-clamp-4'
+                            } ${isEditable ? 'cursor-text hover:bg-neo-volt/20 rounded-lg px-3 py-1 -mx-3 -my-1 transition-colors' : ''}`}
                         style={{ outline: 'none', border: 'none' }}
                         contentEditable={isEditable}
                         suppressContentEditableWarning
@@ -69,11 +72,11 @@ export default function ProjectWidget({ data, isEditable, size = 'rectangle' }: 
 
                 {/* Tags - only in vertical and hero */}
                 {(isVertical || isHero) && data.tags && data.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-3">
+                    <div className="flex flex-wrap gap-2 mt-4">
                         {data.tags.slice(0, isHero ? 6 : 4).map((tag, index) => (
                             <span
                                 key={index}
-                                className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                                className="px-3 py-1.5 bg-neo-volt text-black text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
                             >
                                 {tag}
                             </span>
@@ -83,13 +86,13 @@ export default function ProjectWidget({ data, isEditable, size = 'rectangle' }: 
 
                 {/* Links - only in rectangle, vertical, and hero */}
                 {!isSquare && (
-                    <div className="flex gap-3 mt-auto pt-3">
+                    <div className="flex gap-3 mt-auto pt-4">
                         {data.githubUrl && (
                             <a
                                 href={data.githubUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                                className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-bold rounded-lg border-2 border-black hover:bg-gray-800 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
                             >
                                 <Github size={16} />
                                 {!isRectangle && <span>Code</span>}
@@ -100,7 +103,7 @@ export default function ProjectWidget({ data, isEditable, size = 'rectangle' }: 
                                 href={data.demoUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                                className="flex items-center gap-2 px-4 py-2 bg-neo-volt text-black text-sm font-bold rounded-lg border-2 border-black hover:bg-yellow-300 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
                             >
                                 <ExternalLink size={16} />
                                 {!isRectangle && <span>Demo</span>}
