@@ -89,14 +89,14 @@ export default function WidgetBottomNav({ userId, isVisible }: WidgetBottomNavPr
 
     return (
         <>
-            <div className="fixed bottom-0 left-0 right-0 z-40 bg-black border-t-4 border-neo-volt shadow-lg">
-                <div className="container mx-auto px-4">
-                    <div className="flex items-center justify-center gap-2 py-3 overflow-x-auto">
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-auto max-w-2xl">
+                <div className="bg-black/90 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl px-4 py-3">
+                    <div className="flex items-center justify-center gap-2 overflow-x-auto">
                         {widgetIcons.map(({ type, icon: Icon, label }) => (
                             <button
                                 key={type}
                                 onClick={() => handleAddWidget(type)}
-                                className="flex flex-col items-center gap-1 min-w-[60px] px-3 py-2 bg-gray-800 hover:bg-neo-volt hover:text-black text-white rounded transition-all border-2 border-gray-700 hover:border-black"
+                                className="flex flex-col items-center gap-1 min-w-[60px] px-3 py-2 bg-white/5 hover:bg-neo-volt hover:text-black text-white rounded-xl transition-all border border-white/10 hover:border-black"
                                 title={`Add ${label}`}
                             >
                                 <Icon size={20} />

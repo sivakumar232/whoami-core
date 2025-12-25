@@ -80,9 +80,11 @@ export default function WidgetWrapper({
     };
     const sizeProp = sizeMap[widgetSize] || 'square';
 
-    // Clone children and pass size prop
+    // Clone children and pass w, h props for content-aware rendering
     const childrenWithProps = cloneElement(children as ReactElement, {
-        size: sizeProp,
+        w: widget.w,
+        h: widget.h,
+        size: sizeProp, // Keep for backward compatibility
     });
 
     return (
@@ -127,8 +129,8 @@ export default function WidgetWrapper({
             {/* Widget card */}
             <div
                 className={`h-full w-full rounded-[32px] bg-white border overflow-hidden transition-all duration-200 ${isEditable
-                        ? 'border-gray-200 hover:border-blue-300 hover:shadow-md'
-                        : 'border-gray-200 hover:shadow-md'
+                    ? 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+                    : 'border-gray-200 hover:shadow-md'
                     }`}
             >
                 {/* Widget content */}

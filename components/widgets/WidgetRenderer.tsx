@@ -15,42 +15,49 @@ import ContactWidget from './ContactWidget';
 interface WidgetRendererProps {
     widget: Widget;
     isEditable?: boolean;
+    w?: number;  // Width in grid units
+    h?: number;  // Height in grid units
 }
 
 /**
  * WidgetRenderer - Factory component that renders the correct widget type
+ * Passes w and h props for content-aware rendering
  */
-export default function WidgetRenderer({ widget, isEditable }: WidgetRendererProps) {
+export default function WidgetRenderer({ widget, isEditable, w, h }: WidgetRendererProps) {
+    // Use widget's w and h if not provided via props
+    const width = w ?? widget.w;
+    const height = h ?? widget.h;
+
     switch (widget.type) {
         case WidgetType.BIO:
-            return <BioWidget data={widget.data as any} isEditable={isEditable} />;
+            return <BioWidget data={widget.data as any} isEditable={isEditable} w={width} h={height} />;
 
         case WidgetType.PROJECT:
-            return <ProjectWidget data={widget.data as any} isEditable={isEditable} />;
+            return <ProjectWidget data={widget.data as any} isEditable={isEditable} w={width} h={height} />;
 
         case WidgetType.GITHUB:
-            return <GithubWidget data={widget.data as any} />;
+            return <GithubWidget data={widget.data as any} w={width} h={height} />;
 
         case WidgetType.IMAGE:
-            return <ImageWidget data={widget.data as any} isEditable={isEditable} widgetId={widget.id} />;
+            return <ImageWidget data={widget.data as any} isEditable={isEditable} widgetId={widget.id} w={width} h={height} />;
 
         case WidgetType.LINK:
-            return <LinkWidget data={widget.data as any} isEditable={isEditable} widgetId={widget.id} />;
+            return <LinkWidget data={widget.data as any} isEditable={isEditable} widgetId={widget.id} w={width} h={height} />;
 
         case WidgetType.SOCIAL:
-            return <SocialWidget data={widget.data as any} />;
+            return <SocialWidget data={widget.data as any} w={width} h={height} />;
 
         case WidgetType.SKILLS:
-            return <SkillsWidget data={widget.data as any} />;
+            return <SkillsWidget data={widget.data as any} w={width} h={height} />;
 
         case WidgetType.EXPERIENCE:
-            return <ExperienceWidget data={widget.data as any} />;
+            return <ExperienceWidget data={widget.data as any} w={width} h={height} />;
 
         case WidgetType.EDUCATION:
-            return <EducationWidget data={widget.data as any} />;
+            return <EducationWidget data={widget.data as any} w={width} h={height} />;
 
         case WidgetType.CONTACT:
-            return <ContactWidget data={widget.data as any} />;
+            return <ContactWidget data={widget.data as any} w={width} h={height} />;
 
         default:
             return (
