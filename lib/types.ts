@@ -24,6 +24,7 @@ export interface Widget {
     id: string;
     userId: string;
     type: WidgetType;
+    size?: 'SMALL' | 'MEDIUM' | 'LARGE' | 'EXTRA_LARGE'; // Preset size
     x: number;        // Grid column position (0-based)
     y: number;        // Grid row position (0-based)
     w: number;        // Width in grid units

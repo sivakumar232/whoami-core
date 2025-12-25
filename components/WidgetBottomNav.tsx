@@ -28,9 +28,12 @@ export default function WidgetBottomNav({ userId, isVisible }: WidgetBottomNavPr
     const { widgets, addWidget } = useWidgetStore();
     const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
 
+
     const handleAddWidget = async (type: WidgetType) => {
         const defaults = widgetDefaults[type];
-        const position = findNextPosition(widgets, defaults.w || 4);
+        const width = defaults.w || 4;
+        const height = defaults.h || 3;
+        const position = findNextPosition(widgets, width, height);
 
         // For Link widget, show custom dialog
         if (type === WidgetType.LINK) {
@@ -44,15 +47,18 @@ export default function WidgetBottomNav({ userId, isVisible }: WidgetBottomNavPr
             type,
             x: position.x,
             y: position.y,
-            w: defaults.w || 4,
-            h: defaults.h || 3,
+            w: width,
+            h: height,
             data: defaults.data || {},
         });
     };
 
+
     const handleLinkSubmit = async (url: string) => {
         const defaults = widgetDefaults[WidgetType.LINK];
-        const position = findNextPosition(widgets, defaults.w || 4);
+        const width = defaults.w || 2;
+        const height = defaults.h || 2;
+        const position = findNextPosition(widgets, width, height);
 
         // Extract domain name for title
         let title = 'Link';
@@ -68,8 +74,8 @@ export default function WidgetBottomNav({ userId, isVisible }: WidgetBottomNavPr
             type: WidgetType.LINK,
             x: position.x,
             y: position.y,
-            w: defaults.w || 4,
-            h: defaults.h || 3,
+            w: width,
+            h: height,
             data: {
                 url,
                 title,
@@ -83,18 +89,18 @@ export default function WidgetBottomNav({ userId, isVisible }: WidgetBottomNavPr
 
     return (
         <>
-            <div className="fixed bottom-0 left-0 right-0 z-40 bg-neo-charcoal border-t-4 border-neo-volt shadow-lg">
+            <div className="fixed bottom-0 left-0 right-0 z-40 bg-black border-t-4 border-neo-volt shadow-lg">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-center gap-2 py-3 overflow-x-auto">
                         {widgetIcons.map(({ type, icon: Icon, label }) => (
                             <button
                                 key={type}
                                 onClick={() => handleAddWidget(type)}
-                                className="neo-btn-icon flex flex-col items-center gap-1 min-w-[60px]"
+                                className="flex flex-col items-center gap-1 min-w-[60px] px-3 py-2 bg-gray-800 hover:bg-neo-volt hover:text-black text-white rounded transition-all border-2 border-gray-700 hover:border-black"
                                 title={`Add ${label}`}
                             >
                                 <Icon size={20} />
-                                <span className="text-xs neo-text-body">
+                                <span className="text-xs font-bold">
                                     {label}
                                 </span>
                             </button>

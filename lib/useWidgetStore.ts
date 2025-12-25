@@ -134,11 +134,6 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                console.error('Widget update failed:', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    error: errorData,
-                });
                 throw new Error(`Failed to update widget: ${errorData.error || response.statusText}`);
             }
 
@@ -152,14 +147,12 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
                 error: null,
             }));
         } catch (error) {
-            console.error('Failed to update widget:', error);
             // Rollback on error
             set({
                 widgets: previousWidgets,
                 error: error instanceof Error ? error.message : 'Unknown error',
             });
-            // Don't throw - just log the error to avoid breaking the UI
-            console.warn('Widget update failed, changes reverted');
+            // Silently handle expected errors (widget not found, etc.)
         }
     },
 
@@ -168,6 +161,15 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
      * Optimistically removes from UI, then syncs with server
      */
     deleteWidget: async (id: string) => {
+        // Skip if widget has temporary ID (not yet saved to database)
+        if (id.startsWith('temp-')) {
+            console.log('Removing temporary widget from store:', id);
+            set((state) => ({
+                widgets: state.widgets.filter((w) => w.id !== id),
+            }));
+            return;
+        }
+
         // Store previous state for rollback
         const previousWidgets = get().widgets;
 
@@ -181,7 +183,10 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
                 method: 'DELETE',
             });
 
-            if (!response.ok) throw new Error('Failed to delete widget');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(`Failed to delete widget: ${errorData.error || response.statusText}`);
+            }
 
             set({ error: null });
         } catch (error) {
@@ -190,7 +195,8 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
                 widgets: previousWidgets,
                 error: error instanceof Error ? error.message : 'Unknown error',
             });
-            throw error;
+            // Silently handle expected errors
+            console.warn('Widget deletion failed, rolled back');
         }
     },
 
@@ -199,11 +205,16 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
      * Convenience method that calls updateWidget
      */
     moveWidget: async (id: string, x: number, y: number) => {
+        // Skip if widget has temporary ID (not yet saved to database)
+        if (id.startsWith('temp-')) {
+            console.log('Skipping move for temporary widget:', id);
+            return;
+        }
+
         try {
             return await get().updateWidget(id, { x, y });
         } catch (error) {
-            // Error already handled in updateWidget, just log it
-            console.error('Failed to move widget:', error);
+            // Error already handled in updateWidget, silently ignore
         }
     },
 
@@ -212,11 +223,16 @@ export const useWidgetStore = create<WidgetStore>((set, get) => ({
      * Convenience method that calls updateWidget
      */
     resizeWidget: async (id: string, w: number, h: number) => {
+        // Skip if widget has temporary ID (not yet saved to database)
+        if (id.startsWith('temp-')) {
+            console.log('Skipping resize for temporary widget:', id);
+            return;
+        }
+
         try {
             return await get().updateWidget(id, { w, h });
         } catch (error) {
-            // Error already handled in updateWidget, just log it
-            console.error('Failed to resize widget:', error);
+            // Error already handled in updateWidget, silently ignore
         }
     },
 

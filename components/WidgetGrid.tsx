@@ -120,22 +120,22 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
     }
 
     return (
-        <div className="w-full max-w-[800px] mx-auto">
+        <div className="w-full max-w-[1200px] mx-auto">
             {/* @ts-ignore - react-grid-layout types are incomplete */}
             <GridLayout
                 className="layout"
                 layout={layout}
-                cols={4}
-                rowHeight={188}
-                width={800}
+                cols={12}
+                rowHeight={32}
+                width={1200}
                 isDraggable={isEditable}
-                isResizable={false}
+                isResizable={isEditable}
                 onLayoutChange={handleLayoutChange}
                 draggableHandle=".widget-wrapper"
                 margin={[16, 16]}
-                containerPadding={[0, 0]}
-                compactType="vertical"
-                preventCollision={false}
+                containerPadding={[16, 16]}
+                compactType={null}
+                preventCollision={true}
             >
                 {widgets.map((widget) => (
                     <div key={widget.id}>

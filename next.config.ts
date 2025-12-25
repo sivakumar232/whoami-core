@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    // Disable performance measurement to fix timestamp error
+    serverComponentsHmrCache: false,
+  },
 };
 
 export default nextConfig;

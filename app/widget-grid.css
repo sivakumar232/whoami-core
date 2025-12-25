@@ -1,13 +1,29 @@
 /* Custom styles for react-grid-layout */
 
-/* Grid item styling */
+/* Grid layout container */
+.react-grid-layout {
+  position: relative;
+  transition: height 200ms ease;
+}
+
+/* Grid item styling - CRITICAL: must have absolute positioning */
 .react-grid-item {
   transition: all 200ms ease;
   transition-property: left, top, width, height;
+  position: absolute;
 }
 
 .react-grid-item.cssTransforms {
   transition-property: transform, width, height;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: transparent !important;
+  border: 2px dashed rgba(156, 163, 175, 0.4) !important;
+  border-radius: 0.75rem;
+  opacity: 1;
+  transition-duration: 100ms;
+  z-index: 2;
 }
 
 /* Dragging state */
@@ -15,6 +31,7 @@
   transition: none;
   z-index: 100;
   will-change: transform;
+  cursor: grabbing !important;
 }
 
 /* Resizing state */
@@ -24,30 +41,81 @@
   will-change: transform, width, height;
 }
 
-/* Placeholder while dragging - completely transparent with subtle border */
-.react-grid-placeholder {
-  background: transparent !important;
-  border: 2px dashed rgba(156, 163, 175, 0.4) !important;
-  border-radius: 0.75rem;
-  opacity: 1;
-  transition-duration: 100ms;
-  z-index: 2;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
-}
-
-/* Resize handle - hidden since we use preset sizes only */
+/* Resize handle - visible and functional */
 .react-resizable-handle {
-  display: none !important;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2IDYiIHN0eWxlPSJiYWNrZ3JvdW5kLWNvbG9yOiNmZmZmZmYwMCIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSI2cHgiIGhlaWdodD0iNnB4Ij48ZyBvcGFjaXR5PSIwLjMwMiI+PHBhdGggZD0iTSA2IDYgTCAwIDYgTCAwIDQuMiBMIDQgNC4yIEwgNC4yIDQuMiBMIDQuMiAwIEwgNiAwIEwgNiA2IEwgNiA2IFoiIGZpbGw9IiMwMDAwMDAiLz48L2c+PC9zdmc+');
+  background-position: bottom right;
+  padding: 0 3px 3px 0;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  box-sizing: border-box;
 }
 
-/* Grid layout container */
-.react-grid-layout {
-  position: relative;
-  transition: height 200ms ease;
+.react-resizable-handle-sw {
+  bottom: 0;
+  left: 0;
+  cursor: sw-resize;
+  transform: rotate(90deg);
+}
+
+.react-resizable-handle-se {
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+}
+
+.react-resizable-handle-nw {
+  top: 0;
+  left: 0;
+  cursor: nw-resize;
+  transform: rotate(180deg);
+}
+
+.react-resizable-handle-ne {
+  top: 0;
+  right: 0;
+  cursor: ne-resize;
+  transform: rotate(270deg);
+}
+
+.react-resizable-handle-w,
+.react-resizable-handle-e {
+  top: 50%;
+  margin-top: -10px;
+  cursor: ew-resize;
+}
+
+.react-resizable-handle-w {
+  left: 0;
+  transform: rotate(135deg);
+}
+
+.react-resizable-handle-e {
+  right: 0;
+  transform: rotate(315deg);
+}
+
+.react-resizable-handle-n,
+.react-resizable-handle-s {
+  left: 50%;
+  margin-left: -10px;
+  cursor: ns-resize;
+}
+
+.react-resizable-handle-n {
+  top: 0;
+  transform: rotate(225deg);
+}
+
+.react-resizable-handle-s {
+  bottom: 0;
+  transform: rotate(45deg);
 }
 
 /* Prevent text selection while dragging */
@@ -55,12 +123,8 @@
   user-select: none;
 }
 
-/* Custom cursor while dragging */
-.react-grid-item.react-draggable-dragging {
-  cursor: grabbing !important;
-}
-
-.react-grid-item:not(.react-draggable-dragging) {
+/* Custom cursor */
+.react-grid-item:not(.react-draggable-dragging):not(.static) {
   cursor: grab;
 }
 
@@ -72,10 +136,6 @@
 @media (max-width: 768px) {
   .react-grid-item {
     margin-bottom: 1rem;
-  }
-
-  .react-resizable-handle {
-    display: none;
   }
 }
 
@@ -94,4 +154,17 @@
 
 .react-grid-item {
   animation: fadeInScale 300ms ease-out;
+}
+
+/* Force square aspect ratio for square widgets */
+.widget-size-square {
+  aspect-ratio: 1 / 1;
+}
+
+.widget-size-vertical {
+  aspect-ratio: 2 / 3;
+}
+
+.widget-size-horizontal {
+  aspect-ratio: 3 / 2;
 }

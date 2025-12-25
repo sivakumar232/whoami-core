@@ -1,15 +1,17 @@
 import { WidgetType, CreateWidgetInput } from './types';
+import { WIDGET_TYPE_SIZES } from './widgetSizes';
+import { findNextPosition as gridFindNextPosition } from './gridEngine';
 
 /**
  * Default data and configuration for each widget type
- * Used when creating new widgets via the Add Widget modal
+ * Using 12-column grid sizes
  */
 
 export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
     [WidgetType.BIO]: {
         type: WidgetType.BIO,
-        w: 4,
-        h: 3,
+        w: 6,  // Hero size in 12-column grid
+        h: 4,
         data: {
             title: 'Your Title',
             description: 'Tell visitors about yourself...',
@@ -19,8 +21,8 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
 
     [WidgetType.PROJECT]: {
         type: WidgetType.PROJECT,
-        w: 4,
-        h: 4,
+        w: 4,  // Standard size
+        h: 3,
         data: {
             title: 'Project Name',
             description: 'Describe your amazing project...',
@@ -32,8 +34,8 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
 
     [WidgetType.GITHUB]: {
         type: WidgetType.GITHUB,
-        w: 4,
-        h: 3,
+        w: 6,  // Hero size
+        h: 4,
         data: {
             username: 'yourusername',
             showStats: true,
@@ -43,7 +45,7 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
 
     [WidgetType.IMAGE]: {
         type: WidgetType.IMAGE,
-        w: 3,
+        w: 4,  // Standard size
         h: 3,
         data: {
             url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500',
@@ -54,7 +56,7 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
 
     [WidgetType.LINK]: {
         type: WidgetType.LINK,
-        w: 3,
+        w: 2,  // Mini size
         h: 2,
         data: {
             title: 'Useful Link',
@@ -66,7 +68,7 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
 
     [WidgetType.SOCIAL]: {
         type: WidgetType.SOCIAL,
-        w: 2,
+        w: 2,  // Mini size
         h: 2,
         data: {
             platform: 'github',
@@ -77,8 +79,8 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
 
     [WidgetType.SKILLS]: {
         type: WidgetType.SKILLS,
-        w: 4,
-        h: 3,
+        w: 3,  // Compact size
+        h: 2,
         data: {
             title: 'Skills',
             skills: [
@@ -91,7 +93,7 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
 
     [WidgetType.EXPERIENCE]: {
         type: WidgetType.EXPERIENCE,
-        w: 4,
+        w: 4,  // Standard size
         h: 3,
         data: {
             company: 'Company Name',
@@ -104,7 +106,7 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
 
     [WidgetType.EDUCATION]: {
         type: WidgetType.EDUCATION,
-        w: 4,
+        w: 4,  // Standard size
         h: 3,
         data: {
             institution: 'University Name',
@@ -118,8 +120,8 @@ export const widgetDefaults: Record<WidgetType, Partial<CreateWidgetInput>> = {
 
     [WidgetType.CONTACT]: {
         type: WidgetType.CONTACT,
-        w: 3,
-        h: 3,
+        w: 4,  // Standard size
+        h: 2,
         data: {
             email: 'your.email@example.com',
             phone: '+1 (555) 123-4567',
@@ -186,16 +188,21 @@ export const widgetMetadata: Record<WidgetType, { icon: string; name: string; de
 };
 
 /**
- * Find the next available position for a new widget
+ * Find the next available position for a new widget using grid engine
  */
-export function findNextPosition(existingWidgets: any[], defaultWidth: number): { x: number; y: number } {
+export function findNextPosition(existingWidgets: any[], defaultWidth: number, defaultHeight: number = 3): { x: number; y: number } {
     if (existingWidgets.length === 0) {
         return { x: 0, y: 0 };
     }
 
-    // Find the maximum y position
-    const maxY = Math.max(...existingWidgets.map(w => w.y + w.h));
+    // Use grid engine's smart placement algorithm
+    const components = existingWidgets.map(w => ({
+        id: w.id,
+        x: w.x,
+        y: w.y,
+        w: w.w,
+        h: w.h
+    }));
 
-    // Try to place in the first row after existing widgets
-    return { x: 0, y: maxY };
+    return gridFindNextPosition(defaultWidth, defaultHeight, components);
 }

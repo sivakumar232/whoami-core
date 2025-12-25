@@ -25,6 +25,7 @@ model Widget {
   userId    String
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      WidgetType
+  size      String?    @default("MEDIUM") // Preset size: SMALL, MEDIUM, LARGE, EXTRA_LARGE
   x         Int        @default(0)
   y         Int        @default(0)
   w         Int        @default(1) // Width in grid columns (1-4)
