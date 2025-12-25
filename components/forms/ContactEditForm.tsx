@@ -19,7 +19,7 @@ export default function ContactEditForm({ data, onChange }: ContactEditFormProps
                     type="email"
                     value={data?.email || ''}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="neo-input"
                     placeholder="your.email@example.com"
                 />
             </FormField>
@@ -29,7 +29,7 @@ export default function ContactEditForm({ data, onChange }: ContactEditFormProps
                     type="tel"
                     value={data?.phone || ''}
                     onChange={(e) => handleChange('phone', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="neo-input"
                     placeholder="+1 (555) 123-4567"
                 />
             </FormField>
@@ -39,7 +39,7 @@ export default function ContactEditForm({ data, onChange }: ContactEditFormProps
                     type="text"
                     value={data?.location || ''}
                     onChange={(e) => handleChange('location', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="neo-input"
                     placeholder="City, Country"
                 />
             </FormField>
@@ -49,7 +49,7 @@ export default function ContactEditForm({ data, onChange }: ContactEditFormProps
                     type="text"
                     value={data?.availability || ''}
                     onChange={(e) => handleChange('availability', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="neo-input"
                     placeholder="e.g., Available for opportunities"
                 />
             </FormField>

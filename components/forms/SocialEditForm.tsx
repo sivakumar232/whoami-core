@@ -20,7 +20,7 @@ export default function SocialEditForm({ data, onChange }: SocialEditFormProps) 
                 <select
                     value={data?.platform || 'github'}
                     onChange={(e) => handleChange('platform', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="neo-input"
                 >
                     {platforms.map((platform) => (
                         <option key={platform} value={platform} className="bg-gray-900">
@@ -35,7 +35,7 @@ export default function SocialEditForm({ data, onChange }: SocialEditFormProps) 
                     type="text"
                     value={data?.username || ''}
                     onChange={(e) => handleChange('username', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="neo-input"
                     placeholder="@username"
                 />
             </FormField>
@@ -45,7 +45,7 @@ export default function SocialEditForm({ data, onChange }: SocialEditFormProps) 
                     type="url"
                     value={data?.url || ''}
                     onChange={(e) => handleChange('url', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="neo-input"
                     placeholder="https://..."
                 />
             </FormField>

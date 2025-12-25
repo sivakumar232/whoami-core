@@ -67,33 +67,34 @@ export default function AddWidgetModal({ isOpen, onClose, userId }: AddWidgetMod
         <>
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fadeIn"
+                className="neo-modal-backdrop"
                 onClick={onClose}
             />
 
             {/* Modal */}
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                <div className="relative w-full max-w-4xl max-h-[90vh] overflow-auto bg-gradient-to-br from-indigo-950/95 via-purple-900/95 to-violet-950/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl animate-scaleIn">
+            <div className="neo-modal">
+                <div className="neo-modal-content w-full max-w-4xl">
                     {/* Header */}
-                    <div className="sticky top-0 bg-gradient-to-br from-indigo-950 via-purple-900 to-violet-950 border-b border-white/20 p-6 flex items-center justify-between">
+                    <div className="neo-modal-header">
                         <div>
-                            <h2 className="text-2xl font-bold text-white">
+                            <h2 className="neo-text-title text-neo-volt">
                                 Add Widget
                             </h2>
-                            <p className="text-white/60 text-sm mt-1">
+                            <p className="neo-text-body text-white/60 text-sm mt-1">
                                 Choose a widget type to add to your portfolio
                             </p>
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                            className="neo-btn-icon"
+                            aria-label="Close modal"
                         >
-                            <X className="text-white" size={24} />
+                            <X size={20} />
                         </button>
                     </div>
 
                     {/* Widget Grid */}
-                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="neo-modal-body neo-grid neo-grid-3">
                         {Object.values(WidgetType).map((type) => (
                             <WidgetTypeCard
                                 key={type}
@@ -104,32 +105,6 @@ export default function AddWidgetModal({ isOpen, onClose, userId }: AddWidgetMod
                     </div>
                 </div>
             </div>
-
-            <style jsx global>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes scaleIn {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        .animate-fadeIn {
-          animation: fadeIn 200ms ease-out;
-        }
-        
-        .animate-scaleIn {
-          animation: scaleIn 200ms ease-out;
-        }
-      `}</style>
         </>
     );
 }

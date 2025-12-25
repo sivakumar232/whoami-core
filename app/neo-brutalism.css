@@ -1,0 +1,49 @@
+/* ============================================
+   NEO-BRUTALISM DESIGN SYSTEM - CLEAN VERSION
+   ============================================ */
+
+/* Color Variables */
+:root {
+    /* Neon Colors */
+    --neo-volt: #CCFF00;
+    --neo-pink: #FF00FF;
+    --neo-orange: #FC4C02;
+    --neo-cyan: #00FFFF;
+
+    /* Base Colors */
+    --neo-black: #000000;
+    --neo-white: #FFFFFF;
+}
+
+/* Utility Classes */
+.bg-neo-volt {
+    background-color: var(--neo-volt);
+}
+
+.bg-neo-pink {
+    background-color: var(--neo-pink);
+}
+
+.bg-neo-orange {
+    background-color: var(--neo-orange);
+}
+
+.bg-neo-cyan {
+    background-color: var(--neo-cyan);
+}
+
+.text-neo-volt {
+    color: var(--neo-volt);
+}
+
+.text-neo-pink {
+    color: var(--neo-pink);
+}
+
+.text-neo-orange {
+    color: var(--neo-orange);
+}
+
+.text-neo-cyan {
+    color: var(--neo-cyan);
+}

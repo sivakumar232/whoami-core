@@ -19,7 +19,7 @@ export default function BioEditForm({ data, onChange }: BioEditFormProps) {
                     type="text"
                     value={data?.title || ''}
                     onChange={(e) => handleChange('title', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="neo-input"
                     placeholder="e.g., Full Stack Developer"
                 />
             </FormField>
@@ -29,7 +29,7 @@ export default function BioEditForm({ data, onChange }: BioEditFormProps) {
                     value={data?.description || ''}
                     onChange={(e) => handleChange('description', e.target.value)}
                     rows={4}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    className="neo-textarea"
                     placeholder="Tell visitors about yourself..."
                 />
             </FormField>
@@ -39,7 +39,7 @@ export default function BioEditForm({ data, onChange }: BioEditFormProps) {
                     type="url"
                     value={data?.avatar || ''}
                     onChange={(e) => handleChange('avatar', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="neo-input"
                     placeholder="https://example.com/avatar.jpg"
                 />
             </FormField>
