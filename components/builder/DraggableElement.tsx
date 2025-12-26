@@ -68,9 +68,7 @@ export function DraggableElement({ element, isSelected, isEditMode, onSelect }: 
 
     const handleDelete = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (confirm('Delete this element?')) {
-            deleteElement(element.id);
-        }
+        deleteElement(element.id);
     };
 
     const handlePropsChange = (newProps: Record<string, any>) => {
