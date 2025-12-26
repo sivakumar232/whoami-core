@@ -3,6 +3,11 @@ import { TextBlock } from '../elements/TextBlock';
 import { Heading } from '../elements/Heading';
 import { ButtonElement } from '../elements/ButtonElement';
 import { ImageElement } from '../elements/ImageElement';
+import { ProjectCard } from '../elements/ProjectCard';
+import { SkillTag } from '../elements/SkillTag';
+import { SocialLinks } from '../elements/SocialLinks';
+import { Divider } from '../elements/Divider';
+import { Container } from '../elements/Container';
 
 interface ElementRendererProps {
     element: ElementData;
@@ -63,6 +68,62 @@ export function ElementRenderer({ element, isEditable = false, onPropsChange }: 
                     url={element.props.url}
                     alt={element.props.alt || 'Image'}
                     fit={element.props.fit || 'cover'}
+                />
+            );
+
+        case 'project_card':
+            return (
+                <ProjectCard
+                    title={element.props.title}
+                    description={element.props.description}
+                    imageUrl={element.props.imageUrl}
+                    tags={element.props.tags}
+                    githubUrl={element.props.githubUrl}
+                    liveUrl={element.props.liveUrl}
+                    isEditable={isEditable}
+                    onChange={handleChange}
+                />
+            );
+
+        case 'skill_tag':
+            return (
+                <SkillTag
+                    skill={element.props.skill || 'React'}
+                    level={element.props.level || 'intermediate'}
+                    isEditable={isEditable}
+                    onChange={(skill) => handleChange('skill', skill)}
+                />
+            );
+
+        case 'social_links':
+            return (
+                <SocialLinks
+                    github={element.props.github}
+                    linkedin={element.props.linkedin}
+                    twitter={element.props.twitter}
+                    email={element.props.email}
+                    website={element.props.website}
+                    size={element.props.size || 'md'}
+                    layout={element.props.layout || 'horizontal'}
+                />
+            );
+
+        case 'divider':
+            return (
+                <Divider
+                    style={element.props.style || 'solid'}
+                    color={element.props.color || '#e5e7eb'}
+                    thickness={element.props.thickness || 2}
+                />
+            );
+
+        case 'container':
+            return (
+                <Container
+                    backgroundColor={element.props.backgroundColor}
+                    padding={element.props.padding}
+                    borderRadius={element.props.borderRadius}
+                    border={element.props.border}
                 />
             );
 

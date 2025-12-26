@@ -5,6 +5,7 @@ import { Trash2 } from 'lucide-react';
 import { useElementStore } from '@/lib/builder/useElementStore';
 import { ElementData } from '@/lib/builder/types';
 import { ElementRenderer } from './ElementRenderer';
+import { ResizeHandle } from './ResizeHandle';
 
 interface DraggableElementProps {
     element: ElementData;
@@ -12,6 +13,9 @@ interface DraggableElementProps {
     isEditMode: boolean;
     onSelect: () => void;
 }
+
+const MIN_WIDTH = 50;
+const MIN_HEIGHT = 30;
 
 /**
  * DraggableElement - Wrapper that makes elements draggable and resizable
@@ -73,6 +77,42 @@ export function DraggableElement({ element, isSelected, isEditMode, onSelect }: 
         updateElement(element.id, { props: newProps });
     };
 
+    const handleResize = (position: string, deltaX: number, deltaY: number) => {
+        let newX = element.x;
+        let newY = element.y;
+        let newWidth = element.width;
+        let newHeight = element.height;
+
+        // Handle horizontal resize
+        if (position.includes('e')) {
+            newWidth = Math.max(MIN_WIDTH, element.width + deltaX);
+        } else if (position.includes('w')) {
+            const widthChange = -deltaX;
+            if (element.width + widthChange >= MIN_WIDTH) {
+                newX = element.x + deltaX;
+                newWidth = element.width + widthChange;
+            }
+        }
+
+        // Handle vertical resize
+        if (position.includes('s')) {
+            newHeight = Math.max(MIN_HEIGHT, element.height + deltaY);
+        } else if (position.includes('n')) {
+            const heightChange = -deltaY;
+            if (element.height + heightChange >= MIN_HEIGHT) {
+                newY = element.y + deltaY;
+                newHeight = element.height + heightChange;
+            }
+        }
+
+        updateElement(element.id, {
+            x: newX,
+            y: newY,
+            width: newWidth,
+            height: newHeight,
+        });
+    };
+
     return (
         <div
             className={`
@@ -110,6 +150,20 @@ export function DraggableElement({ element, isSelected, isEditMode, onSelect }: 
                 >
                     <Trash2 size={14} />
                 </button>
+            )}
+
+            {/* Resize handles - 8 directions */}
+            {isSelected && isEditMode && (
+                <>
+                    <ResizeHandle position="n" onResize={handleResize} />
+                    <ResizeHandle position="s" onResize={handleResize} />
+                    <ResizeHandle position="e" onResize={handleResize} />
+                    <ResizeHandle position="w" onResize={handleResize} />
+                    <ResizeHandle position="ne" onResize={handleResize} />
+                    <ResizeHandle position="nw" onResize={handleResize} />
+                    <ResizeHandle position="se" onResize={handleResize} />
+                    <ResizeHandle position="sw" onResize={handleResize} />
+                </>
             )}
         </div>
     );

@@ -9,10 +9,20 @@ interface ElementLibraryProps {
 }
 
 const ELEMENT_TYPES = [
-    { type: 'text_block', name: 'Text Block', icon: '📝' },
-    { type: 'heading', name: 'Heading', icon: '📰' },
-    { type: 'button', name: 'Button', icon: '🔘' },
-    { type: 'image', name: 'Image', icon: '🖼️' },
+    // Basic
+    { type: 'heading', name: 'Heading', icon: '📰', category: 'Basic', width: 300, height: 60 },
+    { type: 'text_block', name: 'Text Block', icon: '📝', category: 'Basic', width: 300, height: 100 },
+    { type: 'button', name: 'Button', icon: '🔘', category: 'Basic', width: 150, height: 50 },
+    { type: 'image', name: 'Image', icon: '🖼️', category: 'Basic', width: 300, height: 200 },
+    { type: 'divider', name: 'Divider', icon: '➖', category: 'Basic', width: 300, height: 10 },
+
+    // Portfolio
+    { type: 'project_card', name: 'Project Card', icon: '💼', category: 'Portfolio', width: 350, height: 400 },
+    { type: 'skill_tag', name: 'Skill Tag', icon: '🏷️', category: 'Portfolio', width: 120, height: 40 },
+    { type: 'social_links', name: 'Social Links', icon: '🔗', category: 'Portfolio', width: 200, height: 50 },
+
+    // Layout
+    { type: 'container', name: 'Container', icon: '📦', category: 'Layout', width: 400, height: 300 },
 ];
 
 /**
@@ -24,14 +34,15 @@ export function ElementLibrary({ userId, isVisible }: ElementLibraryProps) {
     const handleAddElement = async (type: string) => {
         // Add element at a staggered position
         const offset = elements.length * 20;
+        const elementType = ELEMENT_TYPES.find(el => el.type === type);
 
         await addElement({
             userId,
             type,
             x: 100 + offset,
             y: 100 + offset,
-            width: 200,
-            height: 100,
+            width: elementType?.width || 200,
+            height: elementType?.height || 100,
             zIndex: elements.length,
             props: {},
         });
@@ -46,23 +57,28 @@ export function ElementLibrary({ userId, isVisible }: ElementLibraryProps) {
                 <p className="text-xs text-gray-600 mt-1">Click to add to canvas</p>
             </div>
 
-            <div className="p-4 space-y-2">
-                {ELEMENT_TYPES.map(({ type, name, icon }) => (
-                    <button
-                        key={type}
-                        onClick={() => handleAddElement(type)}
-                        className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all group flex items-center gap-3"
-                    >
-                        <span className="text-2xl">{icon}</span>
-                        <div className="flex-1">
-                            <div className="font-medium text-sm text-gray-900 group-hover:text-blue-600">
-                                {name}
-                            </div>
-                        </div>
-                        <Plus size={16} className="text-gray-400 group-hover:text-blue-600" />
-                    </button>
-                ))}
-            </div>
+            {['Basic', 'Portfolio', 'Layout'].map(category => (
+                <div key={category} className="p-4">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">{category}</h3>
+                    <div className="space-y-2">
+                        {ELEMENT_TYPES.filter(el => el.category === category).map(({ type, name, icon }) => (
+                            <button
+                                key={type}
+                                onClick={() => handleAddElement(type)}
+                                className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all group flex items-center gap-3"
+                            >
+                                <span className="text-2xl">{icon}</span>
+                                <div className="flex-1">
+                                    <div className="font-medium text-sm text-gray-900 group-hover:text-blue-600">
+                                        {name}
+                                    </div>
+                                </div>
+                                <Plus size={16} className="text-gray-400 group-hover:text-blue-600" />
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            ))}
         </div>
     );
 }
