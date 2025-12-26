@@ -43,6 +43,7 @@ export const WIDGET_TYPE_SIZES: Record<string, { w: number; h: number }> = {
 
 /**
  * Size constraints for each widget type
+ * Updated for flexible custom resizing
  */
 export const WIDGET_CONSTRAINTS: Record<string, {
     minW: number;
@@ -51,64 +52,64 @@ export const WIDGET_CONSTRAINTS: Record<string, {
     maxH: number;
 }> = {
     BIO: {
-        minW: 4,
-        minH: 3,
-        maxW: 8,
-        maxH: 6
+        minW: 3,  // Reduced from 4
+        minH: 2,  // Reduced from 3
+        maxW: 12, // Increased from 8 - full grid width
+        maxH: 12  // Increased from 6
     },
     PROJECT: {
-        minW: 3,
+        minW: 2,  // Reduced from 3
         minH: 2,
-        maxW: 6,
-        maxH: 6
+        maxW: 12, // Increased from 6
+        maxH: 12  // Increased from 6
     },
     SKILLS: {
         minW: 2,
         minH: 2,
-        maxW: 4,
-        maxH: 4
+        maxW: 8,  // Increased from 4
+        maxH: 8   // Increased from 4
     },
     LINK: {
         minW: 2,
         minH: 2,
-        maxW: 3,
-        maxH: 3
+        maxW: 6,  // Increased from 3
+        maxH: 6   // Increased from 3
     },
     EXPERIENCE: {
-        minW: 3,
+        minW: 2,  // Reduced from 3
         minH: 2,
-        maxW: 6,
-        maxH: 6
+        maxW: 12, // Increased from 6
+        maxH: 12  // Increased from 6
     },
     EDUCATION: {
-        minW: 3,
+        minW: 2,  // Reduced from 3
         minH: 2,
-        maxW: 6,
-        maxH: 6
+        maxW: 12, // Increased from 6
+        maxH: 12  // Increased from 6
     },
     GITHUB: {
-        minW: 4,
-        minH: 3,
-        maxW: 8,
-        maxH: 6
+        minW: 3,  // Reduced from 4
+        minH: 2,  // Reduced from 3
+        maxW: 12, // Increased from 8
+        maxH: 12  // Increased from 6
     },
     IMAGE: {
         minW: 2,
         minH: 2,
-        maxW: 6,
-        maxH: 6
+        maxW: 12, // Increased from 6
+        maxH: 12  // Increased from 6
     },
     SOCIAL: {
         minW: 2,
         minH: 2,
-        maxW: 3,
-        maxH: 3
+        maxW: 6,  // Increased from 3
+        maxH: 6   // Increased from 3
     },
     CONTACT: {
-        minW: 3,
+        minW: 2,  // Reduced from 3
         minH: 2,
-        maxW: 6,
-        maxH: 4
+        maxW: 12, // Increased from 6
+        maxH: 8   // Increased from 4
     }
 };
 

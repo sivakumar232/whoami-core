@@ -41,9 +41,10 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
             y: widget.y,
             w: widget.w,
             h: widget.h,
-            minW: 1,
-            minH: 1,
-            maxW: 4, // 4-column grid
+            minW: 2, // Minimum 2 columns for readability
+            minH: 2, // Minimum 2 rows for content
+            maxW: 12, // Full grid width
+            maxH: 20, // Flexible height
         }));
     }, [widgets]);
 
@@ -126,16 +127,19 @@ export default function WidgetGrid({ userId, isEditable }: WidgetGridProps) {
                 className="layout"
                 layout={layout}
                 cols={12}
-                rowHeight={32}
+                rowHeight={60}
                 width={1200}
                 isDraggable={isEditable}
                 isResizable={isEditable}
+                resizeHandles={['se', 'sw', 'ne', 'nw', 's', 'e', 'n', 'w']}
                 onLayoutChange={handleLayoutChange}
                 draggableHandle=".widget-wrapper"
                 margin={[16, 16]}
                 containerPadding={[16, 16]}
                 compactType={null}
                 preventCollision={true}
+                transformScale={1}
+                useCSSTransforms={true}
             >
                 {widgets.map((widget) => (
                     <div key={widget.id}>

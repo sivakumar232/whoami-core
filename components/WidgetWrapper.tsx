@@ -1,7 +1,7 @@
 'use client';
 
 import { Widget } from '@/lib/types';
-import { Trash2, SquareIcon, RectangleHorizontal, RectangleVertical, LayoutGrid, Maximize2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useRef, useState, cloneElement, ReactElement } from 'react';
 import { useWidgetStore } from '@/lib/useWidgetStore';
 import { getWidgetSize, getWidgetSizeClass } from '@/lib/widgetSizeUtils';
@@ -13,17 +13,8 @@ interface WidgetWrapperProps {
     children: React.ReactNode;
 }
 
-// Bento.me preset sizes
-const PRESET_SIZES = [
-    { name: 'Small', icon: SquareIcon, w: 1, h: 1 },
-    { name: 'Wide', icon: RectangleHorizontal, w: 2, h: 1 },
-    { name: 'Tall', icon: RectangleVertical, w: 1, h: 2 },
-    { name: 'Large', icon: LayoutGrid, w: 2, h: 2 },
-    { name: 'Banner', icon: Maximize2, w: 4, h: 2 },
-];
-
 /**
- * WidgetWrapper - Simple bento.me-style widget with preset resizing
+ * WidgetWrapper - Widget container with drag-to-resize functionality
  */
 export default function WidgetWrapper({
     widget,
@@ -31,7 +22,7 @@ export default function WidgetWrapper({
     onDelete,
     children,
 }: WidgetWrapperProps) {
-    const { updateWidget, resizeWidget } = useWidgetStore();
+    const { updateWidget } = useWidgetStore();
     const contentRef = useRef<HTMLDivElement>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -66,10 +57,6 @@ export default function WidgetWrapper({
         }, 300);
     };
 
-    const handleResize = async (w: number, h: number) => {
-        await resizeWidget(widget.id, w, h);
-    };
-
     // Map internal size to widget-expected size prop
     const sizeMap: Record<string, 'square' | 'rectangle' | 'vertical' | 'hero'> = {
         'small': 'square',
@@ -85,53 +72,39 @@ export default function WidgetWrapper({
         w: widget.w,
         h: widget.h,
         size: sizeProp, // Keep for backward compatibility
-    });
+    } as any);
 
     return (
         <div
             className={`widget-wrapper h-full w-full relative group transition-all duration-300 ${isDeleting ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
                 }`}
         >
-            {/* Preset resize buttons toolbar */}
+            {/* Delete button - Simple top-right position */}
             {isEditable && (
-                <div className="absolute -top-11 left-0 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <div className="flex items-center gap-0.5 bg-black rounded-lg p-1">
-                        {/* Resize buttons */}
-                        {PRESET_SIZES.map(({ name, icon: Icon, w, h }) => (
-                            <button
-                                key={name}
-                                onClick={() => handleResize(w, h)}
-                                className="p-2 text-white hover:bg-white/10 rounded transition-colors"
-                                title={name}
-                            >
-                                <Icon size={16} strokeWidth={2} />
-                            </button>
-                        ))}
-
-                        {/* Divider */}
-                        <div className="w-px h-6 bg-white/20 mx-1" />
-
-                        {/* Delete button */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete();
-                            }}
-                            className="p-2 text-white hover:bg-red-500/20 rounded transition-colors"
-                            title="Delete"
-                        >
-                            <Trash2 size={16} strokeWidth={2} />
-                        </button>
-                    </div>
+                <div className="absolute -top-3 -right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete();
+                        }}
+                        className="p-2 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors"
+                        title="Delete Widget"
+                    >
+                        <Trash2 size={16} strokeWidth={2} />
+                    </button>
                 </div>
             )}
 
             {/* Widget card */}
             <div
-                className={`h-full w-full rounded-[32px] bg-white border overflow-hidden transition-all duration-200 ${isEditable
-                    ? 'border-gray-200 hover:border-blue-300 hover:shadow-md'
-                    : 'border-gray-200 hover:shadow-md'
+                className={`h-full w-full rounded-[32px] border-2 overflow-hidden transition-all duration-200 ${isEditable
+                        ? 'border-gray-200 hover:border-blue-400 hover:shadow-lg'
+                        : 'border-gray-200 hover:shadow-md'
                     }`}
+                style={{
+                    backgroundColor: 'var(--theme-widget-bg, #ffffff)',
+                    color: 'var(--theme-text-color, #000000)',
+                }}
             >
                 {/* Widget content */}
                 <div

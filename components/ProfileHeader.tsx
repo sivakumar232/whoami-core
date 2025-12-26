@@ -61,7 +61,13 @@ export default function ProfileHeader({ profileOwner, isEditable }: ProfileHeade
     };
 
     return (
-        <div className="bg-white rounded-2xl p-8">
+        <div
+            className="rounded-2xl p-8"
+            style={{
+                backgroundColor: 'var(--theme-widget-bg, #ffffff)',
+                color: 'var(--theme-text-color, #000000)',
+            }}
+        >
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
                 {/* Profile Picture - Click to upload */}
                 <div className="relative group">
@@ -110,8 +116,12 @@ export default function ProfileHeader({ profileOwner, isEditable }: ProfileHeade
                 <div className="flex-1 space-y-2">
                     {/* Name - editable */}
                     <h1
-                        className={`text-3xl font-bold text-gray-900 ${isEditable ? 'cursor-text hover:bg-gray-50 rounded px-2 -mx-2' : ''}`}
-                        style={{ outline: 'none', border: 'none' }}
+                        className={`text-3xl font-bold ${isEditable ? 'cursor-text hover:bg-gray-50 rounded px-2 -mx-2' : ''}`}
+                        style={{
+                            outline: 'none',
+                            border: 'none',
+                            color: 'inherit'
+                        }}
                         contentEditable={isEditable}
                         suppressContentEditableWarning
                         onBlur={(e) => handleBlur('name', e.currentTarget.textContent || '')}
@@ -121,8 +131,12 @@ export default function ProfileHeader({ profileOwner, isEditable }: ProfileHeade
 
                     {/* Title - editable */}
                     <p
-                        className={`text-lg text-gray-600 ${isEditable ? 'cursor-text hover:bg-gray-50 rounded px-2 -mx-2' : ''}`}
-                        style={{ outline: 'none', border: 'none' }}
+                        className={`text-lg opacity-80 ${isEditable ? 'cursor-text hover:bg-gray-50 rounded px-2 -mx-2' : ''}`}
+                        style={{
+                            outline: 'none',
+                            border: 'none',
+                            color: 'inherit'
+                        }}
                         contentEditable={isEditable}
                         suppressContentEditableWarning
                         onBlur={(e) => handleBlur('title', e.currentTarget.textContent || '')}
@@ -132,8 +146,12 @@ export default function ProfileHeader({ profileOwner, isEditable }: ProfileHeade
 
                     {/* Bio - editable */}
                     <p
-                        className={`text-gray-700 max-w-2xl ${isEditable ? 'cursor-text hover:bg-gray-50 rounded px-2 -mx-2' : ''}`}
-                        style={{ outline: 'none', border: 'none' }}
+                        className={`max-w-2xl opacity-70 ${isEditable ? 'cursor-text hover:bg-gray-50 rounded px-2 -mx-2' : ''}`}
+                        style={{
+                            outline: 'none',
+                            border: 'none',
+                            color: 'inherit'
+                        }}
                         contentEditable={isEditable}
                         suppressContentEditableWarning
                         onBlur={(e) => handleBlur('bio', e.currentTarget.textContent || '')}
