@@ -11,42 +11,38 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  username  String   @unique
+  id        String    @id @default(cuid())
+  clerkId   String    @unique
+  username  String    @unique
   email     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  elements  Element[] // Canvas elements
+}
+
+model Element {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Element type (hero, text_block, image, button, etc.)
+  type      String
+  
+  // Free-form position & size (pixels)
+  x         Float    @default(0)
+  y         Float    @default(0)
+  width     Float    @default(200)
+  height    Float    @default(100)
+  
+  // Z-index for layering
+  zIndex    Int      @default(0)
+  
+  // All component props as JSON (serializable)
+  props     Json     @default("{}")
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  widgets   Widget[]
-}
-
-model Widget {
-  id        String     @id @default(cuid())
-  userId    String
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      WidgetType
-  size      String?    @default("MEDIUM") // Preset size: SMALL, MEDIUM, LARGE, EXTRA_LARGE
-  x         Int        @default(0)
-  y         Int        @default(0)
-  w         Int        @default(1) // Width in grid columns (1-4)
-  h         Int        @default(1) // Height in grid rows
-  data      Json       @default("{}")
-  order     Int        @default(0)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
 
   @@index([userId])
-}
-
-enum WidgetType {
-  BIO
-  PROJECT
-  GITHUB
-  IMAGE
-  LINK
-  SOCIAL
-  SKILLS
-  EXPERIENCE
-  EDUCATION
-  CONTACT
+  @@index([userId, zIndex])
 }

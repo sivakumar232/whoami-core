@@ -2,7 +2,7 @@ import { prisma } from '@/lib/db'
 import { currentUser } from '@clerk/nextjs/server'
 import { notFound } from 'next/navigation'
 import UserPortfolio from '@/components/UserPortfolio'
-import '../widget-grid.css'
+
 
 interface PageProps {
     params: Promise<{ username: string }>
