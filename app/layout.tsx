@@ -26,7 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      signInFallbackRedirectUrl="/onboarding"
+      signUpFallbackRedirectUrl="/onboarding"
+    >
       <html lang="en" suppressHydrationWarning>
         <body
           className={`${bangers.variable} ${spaceGrotesk.variable} antialiased`}

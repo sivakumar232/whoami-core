@@ -4,6 +4,7 @@ const isPublicRoute = createRouteMatcher([
     '/',
     '/sign-in(.*)',
     '/sign-up(.*)',
+    '/sso-callback(.*)', // Allow SSO callback route
     '/onboarding',
     '/(.+)', // Allow all username routes to be public for viewing
 ])
