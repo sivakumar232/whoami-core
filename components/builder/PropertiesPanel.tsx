@@ -29,26 +29,43 @@ export function PropertiesPanel({ element, isVisible, onClose }: PropertiesPanel
     };
 
     const handleDuplicate = () => {
-        // Get userId from element
         duplicateElement(element.id, element.userId);
     };
 
     const handleBringForward = () => {
-        const maxZ = Math.max(...elements.map(el => el.zIndex));
-        if (element.zIndex < maxZ) {
-            handleUpdate({ zIndex: element.zIndex + 1 });
+        // Find element with next higher z-index
+        const sortedElements = [...elements].sort((a, b) => a.zIndex - b.zIndex);
+        const currentIndex = sortedElements.findIndex(el => el.id === element.id);
+
+        if (currentIndex < sortedElements.length - 1) {
+            const nextElement = sortedElements[currentIndex + 1];
+            const currentZ = element.zIndex;
+            const nextZ = nextElement.zIndex;
+
+            // Swap z-indices
+            updateElement(element.id, { zIndex: nextZ });
+            updateElement(nextElement.id, { zIndex: currentZ });
         }
     };
 
     const handleSendBackward = () => {
-        if (element.zIndex > 0) {
-            handleUpdate({ zIndex: element.zIndex - 1 });
+        // Find element with next lower z-index
+        const sortedElements = [...elements].sort((a, b) => a.zIndex - b.zIndex);
+        const currentIndex = sortedElements.findIndex(el => el.id === element.id);
+
+        if (currentIndex > 0) {
+            const prevElement = sortedElements[currentIndex - 1];
+            const currentZ = element.zIndex;
+            const prevZ = prevElement.zIndex;
+
+            // Swap z-indices
+            updateElement(element.id, { zIndex: prevZ });
+            updateElement(prevElement.id, { zIndex: currentZ });
         }
     };
 
     return (
-        <div className="fixed right-0 top-0 h-screen w-80 bg-white border-l border-gray-200 shadow-lg z-20 overflow-y-auto">
-            {/* Header */}
+        <div key={element.id} className="fixed right-0 top-0 h-screen w-80 bg-white border-l border-gray-200 shadow-lg z-20 overflow-y-auto">{/* Header */}
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-900">Properties</h2>
                 <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
