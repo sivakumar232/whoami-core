@@ -3,6 +3,16 @@
 import { X, Trash2, Copy, ArrowUp, ArrowDown } from 'lucide-react';
 import { useElementStore } from '@/lib/builder/useElementStore';
 import { ElementData } from '@/lib/builder/types';
+import { ButtonProperties } from './properties/ButtonProperties';
+import { HeadingProperties } from './properties/HeadingProperties';
+import { TextBlockProperties } from './properties/TextBlockProperties';
+import { ImageProperties } from './properties/ImageProperties';
+import { DividerProperties } from './properties/DividerProperties';
+import { ProjectCardProperties } from './properties/ProjectCardProperties';
+import { SkillTagProperties } from './properties/SkillTagProperties';
+import { SocialLinksProperties } from './properties/SocialLinksProperties';
+import { ContainerProperties } from './properties/ContainerProperties';
+import { NumberInput } from './controls/NumberInput';
 
 interface PropertiesPanelProps {
     element: ElementData | null;
@@ -11,7 +21,7 @@ interface PropertiesPanelProps {
 }
 
 /**
- * PropertiesPanel - Right sidebar for editing element properties
+ * PropertiesPanel - Right sidebar with component-specific properties
  */
 export function PropertiesPanel({ element, isVisible, onClose }: PropertiesPanelProps) {
     const { updateElement, deleteElement, elements, duplicateElement } = useElementStore();
@@ -33,40 +43,57 @@ export function PropertiesPanel({ element, isVisible, onClose }: PropertiesPanel
     };
 
     const handleBringForward = () => {
-        // Find element with next higher z-index
         const sortedElements = [...elements].sort((a, b) => a.zIndex - b.zIndex);
         const currentIndex = sortedElements.findIndex(el => el.id === element.id);
 
         if (currentIndex < sortedElements.length - 1) {
             const nextElement = sortedElements[currentIndex + 1];
-            const currentZ = element.zIndex;
-            const nextZ = nextElement.zIndex;
-
-            // Swap z-indices
-            updateElement(element.id, { zIndex: nextZ });
-            updateElement(nextElement.id, { zIndex: currentZ });
+            updateElement(element.id, { zIndex: nextElement.zIndex });
+            updateElement(nextElement.id, { zIndex: element.zIndex });
         }
     };
 
     const handleSendBackward = () => {
-        // Find element with next lower z-index
         const sortedElements = [...elements].sort((a, b) => a.zIndex - b.zIndex);
         const currentIndex = sortedElements.findIndex(el => el.id === element.id);
 
         if (currentIndex > 0) {
             const prevElement = sortedElements[currentIndex - 1];
-            const currentZ = element.zIndex;
-            const prevZ = prevElement.zIndex;
+            updateElement(element.id, { zIndex: prevElement.zIndex });
+            updateElement(prevElement.id, { zIndex: element.zIndex });
+        }
+    };
 
-            // Swap z-indices
-            updateElement(element.id, { zIndex: prevZ });
-            updateElement(prevElement.id, { zIndex: currentZ });
+    // Render component-specific properties
+    const renderComponentProperties = () => {
+        switch (element.type) {
+            case 'button':
+                return <ButtonProperties element={element} onUpdate={handleUpdate} onPropUpdate={handlePropUpdate} />;
+            case 'heading':
+                return <HeadingProperties element={element} onUpdate={handleUpdate} onPropUpdate={handlePropUpdate} />;
+            case 'text_block':
+                return <TextBlockProperties element={element} onUpdate={handleUpdate} onPropUpdate={handlePropUpdate} />;
+            case 'image':
+                return <ImageProperties element={element} onUpdate={handleUpdate} onPropUpdate={handlePropUpdate} />;
+            case 'divider':
+                return <DividerProperties element={element} onUpdate={handleUpdate} onPropUpdate={handlePropUpdate} />;
+            case 'project_card':
+                return <ProjectCardProperties element={element} onUpdate={handleUpdate} onPropUpdate={handlePropUpdate} />;
+            case 'skill_tag':
+                return <SkillTagProperties element={element} onUpdate={handleUpdate} onPropUpdate={handlePropUpdate} />;
+            case 'social_links':
+                return <SocialLinksProperties element={element} onUpdate={handleUpdate} onPropUpdate={handlePropUpdate} />;
+            case 'container':
+                return <ContainerProperties element={element} onUpdate={handleUpdate} onPropUpdate={handlePropUpdate} />;
+            default:
+                return <div className="text-sm text-gray-500">No properties available</div>;
         }
     };
 
     return (
-        <div key={element.id} className="fixed right-0 top-0 h-screen w-80 bg-white border-l border-gray-200 shadow-lg z-20 overflow-y-auto">{/* Header */}
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+        <div key={element.id} className="fixed right-0 top-0 h-screen w-80 bg-white border-l border-gray-200 shadow-lg z-20 overflow-y-auto">
+            {/* Header */}
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
                 <h2 className="text-lg font-bold text-gray-900">Properties</h2>
                 <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
                     <X size={20} />
@@ -82,122 +109,41 @@ export function PropertiesPanel({ element, isVisible, onClose }: PropertiesPanel
 
                 {/* Position & Size */}
                 <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block">Position & Size</label>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-3">Position & Size</h3>
                     <div className="grid grid-cols-2 gap-2">
-                        <div>
-                            <label className="text-xs text-gray-600">X</label>
-                            <input
-                                type="number"
-                                value={Math.round(element.x)}
-                                onChange={(e) => handleUpdate({ x: Number(e.target.value) })}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-                            />
-                        </div>
-                        <div>
-                            <label className="text-xs text-gray-600">Y</label>
-                            <input
-                                type="number"
-                                value={Math.round(element.y)}
-                                onChange={(e) => handleUpdate({ y: Number(e.target.value) })}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-                            />
-                        </div>
-                        <div>
-                            <label className="text-xs text-gray-600">Width</label>
-                            <input
-                                type="number"
-                                value={Math.round(element.width)}
-                                onChange={(e) => handleUpdate({ width: Number(e.target.value) })}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-                            />
-                        </div>
-                        <div>
-                            <label className="text-xs text-gray-600">Height</label>
-                            <input
-                                type="number"
-                                value={Math.round(element.height)}
-                                onChange={(e) => handleUpdate({ height: Number(e.target.value) })}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-                            />
-                        </div>
+                        <NumberInput
+                            label="X"
+                            value={Math.round(element.x)}
+                            onChange={(value) => handleUpdate({ x: value })}
+                            unit="px"
+                        />
+                        <NumberInput
+                            label="Y"
+                            value={Math.round(element.y)}
+                            onChange={(value) => handleUpdate({ y: value })}
+                            unit="px"
+                        />
+                        <NumberInput
+                            label="Width"
+                            value={Math.round(element.width)}
+                            onChange={(value) => handleUpdate({ width: value })}
+                            unit="px"
+                        />
+                        <NumberInput
+                            label="Height"
+                            value={Math.round(element.height)}
+                            onChange={(value) => handleUpdate({ height: value })}
+                            unit="px"
+                        />
                     </div>
                 </div>
 
-                {/* Color (for text elements) */}
-                {(element.type === 'text_block' || element.type === 'heading') && (
-                    <div>
-                        <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block">Text Color</label>
-                        <input
-                            type="color"
-                            value={element.props.color || '#000000'}
-                            onChange={(e) => handlePropUpdate('color', e.target.value)}
-                            className="w-full h-10 border border-gray-300 rounded cursor-pointer"
-                        />
-                    </div>
-                )}
-
-                {/* Font Size (for text elements) */}
-                {element.type === 'text_block' && (
-                    <div>
-                        <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block">
-                            Font Size: {element.props.fontSize || 16}px
-                        </label>
-                        <input
-                            type="range"
-                            min="12"
-                            max="72"
-                            value={element.props.fontSize || 16}
-                            onChange={(e) => handlePropUpdate('fontSize', Number(e.target.value))}
-                            className="w-full"
-                        />
-                    </div>
-                )}
-
-                {/* Alignment (for text elements) */}
-                {(element.type === 'text_block' || element.type === 'heading') && (
-                    <div>
-                        <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block">Alignment</label>
-                        <div className="flex gap-2">
-                            {['left', 'center', 'right'].map((align) => (
-                                <button
-                                    key={align}
-                                    onClick={() => handlePropUpdate('align', align)}
-                                    className={`flex-1 px-3 py-2 text-sm rounded border ${element.props.align === align
-                                        ? 'bg-blue-600 text-white border-blue-600'
-                                        : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
-                                        }`}
-                                >
-                                    {align}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Button Variant */}
-                {element.type === 'button' && (
-                    <div>
-                        <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block">Variant</label>
-                        <div className="flex flex-col gap-2">
-                            {['primary', 'secondary', 'outline'].map((variant) => (
-                                <button
-                                    key={variant}
-                                    onClick={() => handlePropUpdate('variant', variant)}
-                                    className={`px-3 py-2 text-sm rounded border capitalize ${element.props.variant === variant
-                                        ? 'bg-blue-600 text-white border-blue-600'
-                                        : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
-                                        }`}
-                                >
-                                    {variant}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                {/* Component-Specific Properties */}
+                {renderComponentProperties()}
 
                 {/* Layer Controls */}
                 <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block">Layer</label>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-3">Layer</h3>
                     <div className="flex gap-2">
                         <button
                             onClick={handleBringForward}

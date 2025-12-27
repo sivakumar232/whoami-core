@@ -8,6 +8,7 @@ import { SkillTag } from '../elements/SkillTag';
 import { SocialLinks } from '../elements/SocialLinks';
 import { Divider } from '../elements/Divider';
 import { Container } from '../elements/Container';
+import { memo } from 'react';
 
 interface ElementRendererProps {
     element: ElementData;
@@ -17,8 +18,9 @@ interface ElementRendererProps {
 
 /**
  * ElementRenderer - Maps element types to their components
+ * Memoized to prevent unnecessary re-renders
  */
-export function ElementRenderer({ element, isEditable = false, onPropsChange }: ElementRendererProps) {
+function ElementRendererComponent({ element, isEditable = false, onPropsChange }: ElementRendererProps) {
     const handleChange = (key: string, value: any) => {
         if (onPropsChange) {
             onPropsChange({ ...element.props, [key]: value });
@@ -57,6 +59,20 @@ export function ElementRenderer({ element, isEditable = false, onPropsChange }: 
                     variant={element.props.variant || 'primary'}
                     size={element.props.size || 'md'}
                     url={element.props.url || '#'}
+                    target={element.props.target || '_self'}
+                    fullWidth={element.props.fullWidth}
+                    backgroundColor={element.props.backgroundColor}
+                    textColor={element.props.textColor}
+                    borderColor={element.props.borderColor}
+                    fontFamily={element.props.fontFamily}
+                    fontSize={element.props.fontSize}
+                    fontWeight={element.props.fontWeight}
+                    textTransform={element.props.textTransform}
+                    borderWidth={element.props.borderWidth}
+                    borderRadius={element.props.borderRadius}
+                    hoverEffect={element.props.hoverEffect}
+                    shadowIntensity={element.props.shadowIntensity}
+                    disabled={element.props.disabled}
                     isEditable={isEditable}
                     onChange={(text) => handleChange('text', text)}
                 />
@@ -127,6 +143,7 @@ export function ElementRenderer({ element, isEditable = false, onPropsChange }: 
                 />
             );
 
+
         default:
             return (
                 <div className="w-full h-full bg-gray-100 border border-gray-300 rounded p-4 flex items-center justify-center">
@@ -135,3 +152,17 @@ export function ElementRenderer({ element, isEditable = false, onPropsChange }: 
             );
     }
 }
+
+// Memoize with custom comparison - only re-render if element data actually changed
+export const ElementRenderer = memo(ElementRendererComponent, (prevProps, nextProps) => {
+    // Don't re-render if element ID and props are the same
+    return (
+        prevProps.element.id === nextProps.element.id &&
+        prevProps.isEditable === nextProps.isEditable &&
+        JSON.stringify(prevProps.element.props) === JSON.stringify(nextProps.element.props) &&
+        prevProps.element.x === nextProps.element.x &&
+        prevProps.element.y === nextProps.element.y &&
+        prevProps.element.width === nextProps.element.width &&
+        prevProps.element.height === nextProps.element.height
+    );
+});
