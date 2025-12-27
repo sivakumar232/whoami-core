@@ -8,7 +8,7 @@ import { SkillTag } from '../elements/SkillTag';
 import { SocialLinks } from '../elements/SocialLinks';
 import { Divider } from '../elements/Divider';
 import { Container } from '../elements/Container';
-import { memo } from 'react';
+
 
 interface ElementRendererProps {
     element: ElementData;
@@ -153,16 +153,5 @@ function ElementRendererComponent({ element, isEditable = false, onPropsChange }
     }
 }
 
-// Memoize with custom comparison - only re-render if element data actually changed
-export const ElementRenderer = memo(ElementRendererComponent, (prevProps, nextProps) => {
-    // Don't re-render if element ID and props are the same
-    return (
-        prevProps.element.id === nextProps.element.id &&
-        prevProps.isEditable === nextProps.isEditable &&
-        JSON.stringify(prevProps.element.props) === JSON.stringify(nextProps.element.props) &&
-        prevProps.element.x === nextProps.element.x &&
-        prevProps.element.y === nextProps.element.y &&
-        prevProps.element.width === nextProps.element.width &&
-        prevProps.element.height === nextProps.element.height
-    );
-});
+// Export directly without memo for now - memo was causing issues
+export { ElementRendererComponent as ElementRenderer };

@@ -6,7 +6,7 @@ import { SliderControl } from '../controls/SliderControl';
 import { SelectControl } from '../controls/SelectControl';
 import { ToggleSwitch } from '../controls/ToggleSwitch';
 import { TextInput } from '../controls/TextInput';
-import { Image as ImageIcon } from 'lucide-react';
+import { FileUpload } from '../controls/FileUpload';
 
 interface ImagePropertiesProps {
     element: ElementData;
@@ -23,13 +23,10 @@ export function ImageProperties({ element, onUpdate, onPropUpdate }: ImageProper
             <div>
                 <h3 className="text-sm font-semibold text-gray-900 mb-3">Source</h3>
                 <div className="space-y-3">
-                    <TextInput
-                        label="Image URL"
+                    <FileUpload
+                        label="Image"
                         value={props.url || ''}
                         onChange={(value) => onPropUpdate('url', value)}
-                        placeholder="https://example.com/image.jpg"
-                        type="url"
-                        icon={<ImageIcon size={16} />}
                     />
                     <TextInput
                         label="Alt Text"
