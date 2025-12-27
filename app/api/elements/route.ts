@@ -99,9 +99,19 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
+        // Filter and prepare updates - only allow specific fields
+        const allowedFields = ['x', 'y', 'width', 'height', 'zIndex', 'props', 'type'];
+        const filteredUpdates: any = {};
+
+        for (const key of allowedFields) {
+            if (key in updates) {
+                filteredUpdates[key] = updates[key];
+            }
+        }
+
         const updatedElement = await prisma.element.update({
             where: { id },
-            data: updates,
+            data: filteredUpdates,
         });
 
         return NextResponse.json({ element: updatedElement });

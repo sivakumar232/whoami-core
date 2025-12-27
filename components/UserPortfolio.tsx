@@ -7,6 +7,7 @@ import ProfileHeader from './ProfileHeader';
 import { Canvas } from './builder/Canvas';
 import { ElementLibrary } from './builder/ElementLibrary';
 import { PropertiesPanel } from './builder/PropertiesPanel';
+import { Toolbar } from './builder/Toolbar';
 import { useElementStore } from '@/lib/builder/useElementStore';
 
 interface UserPortfolioProps {
@@ -23,7 +24,7 @@ interface UserPortfolioProps {
  */
 export default function UserPortfolio({ profileOwner, isOwner }: UserPortfolioProps) {
     const { isEditMode, toggleEditMode, canEdit } = useEditMode(isOwner);
-    const { selectedId, setSelectedId, deleteElement } = useElementStore();
+    const { selectedId, setSelectedId, deleteElement, undo, redo, copyElement, pasteElement, duplicateElement } = useElementStore();
     const selectedElement = useElementStore(state =>
         state.elements.find(el => el.id === selectedId)
     );
@@ -33,6 +34,36 @@ export default function UserPortfolio({ profileOwner, isOwner }: UserPortfolioPr
         if (!isEditMode) return;
 
         const handleKeyDown = (e: KeyboardEvent) => {
+            // Undo - Ctrl+Z
+            if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+            }
+
+            // Redo - Ctrl+Shift+Z
+            if (e.ctrlKey && e.shiftKey && e.key === 'Z') {
+                e.preventDefault();
+                redo();
+            }
+
+            // Copy - Ctrl+C
+            if (e.ctrlKey && e.key === 'c' && selectedId) {
+                e.preventDefault();
+                copyElement(selectedId);
+            }
+
+            // Paste - Ctrl+V
+            if (e.ctrlKey && e.key === 'v') {
+                e.preventDefault();
+                pasteElement(profileOwner.id);
+            }
+
+            // Duplicate - Ctrl+D
+            if (e.ctrlKey && e.key === 'd' && selectedId) {
+                e.preventDefault();
+                duplicateElement(selectedId, profileOwner.id);
+            }
+
             // Delete key
             if (e.key === 'Delete' && selectedId) {
                 deleteElement(selectedId);
@@ -83,6 +114,11 @@ export default function UserPortfolio({ profileOwner, isOwner }: UserPortfolioPr
                 onClose={() => setSelectedId(null)}
             />
 
+            {/* Toolbar - Top Center */}
+            {canEdit && isEditMode && (
+                <Toolbar userId={profileOwner.id} />
+            )}
+
             {/* Edit Mode Toggle - Top Right */}
             {canEdit && (
                 <div className="fixed top-4 right-4 z-30">
@@ -112,8 +148,10 @@ export default function UserPortfolio({ profileOwner, isOwner }: UserPortfolioPr
                 </div>
             )}
 
-            <div className={`container mx-auto px-4 py-8 max-w-5xl transition-all duration-300 ${canEdit && isEditMode ? 'ml-64' : ''
-                }`}>
+            <div className={`container mx-auto px-4 py-8 max-w-5xl transition-all duration-300 
+                ${canEdit && isEditMode ? 'ml-64' : ''} 
+                ${canEdit && isEditMode && selectedId ? 'mr-80' : ''}
+            `}>
                 {/* Profile Header - Fixed Section */}
                 <ProfileHeader
                     profileOwner={profileOwner}

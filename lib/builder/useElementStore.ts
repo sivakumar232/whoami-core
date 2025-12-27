@@ -1,11 +1,25 @@
 import { create } from 'zustand';
 import { ElementData, CreateElementInput, UpdateElementInput } from './types';
 
+interface HistoryEntry {
+    type: 'add' | 'delete' | 'update';
+    elementId: string;
+    before?: ElementData;
+    after?: ElementData;
+}
+
 interface ElementStore {
     elements: ElementData[];
     selectedId: string | null;
     isLoading: boolean;
     error: string | null;
+
+    // History
+    history: HistoryEntry[];
+    historyIndex: number;
+
+    // Clipboard
+    clipboard: ElementData | null;
 
     setElements: (elements: ElementData[]) => void;
     setSelectedId: (id: string | null) => void;
@@ -13,13 +27,30 @@ interface ElementStore {
     addElement: (element: CreateElementInput) => Promise<void>;
     updateElement: (id: string, updates: UpdateElementInput) => Promise<void>;
     deleteElement: (id: string) => Promise<void>;
+
+    // History actions
+    addToHistory: (entry: HistoryEntry) => void;
+    undo: () => void;
+    redo: () => void;
+    canUndo: () => boolean;
+    canRedo: () => boolean;
+
+    // Clipboard actions
+    copyElement: (id: string) => void;
+    pasteElement: (userId: string) => Promise<void>;
+    duplicateElement: (id: string, userId: string) => Promise<void>;
 }
+
+const MAX_HISTORY = 50;
 
 export const useElementStore = create<ElementStore>((set, get) => ({
     elements: [],
     selectedId: null,
     isLoading: false,
     error: null,
+    history: [],
+    historyIndex: -1,
+    clipboard: null,
 
     setElements: (elements) => set({ elements }),
     setSelectedId: (id) => set({ selectedId: id }),
@@ -76,13 +107,17 @@ export const useElementStore = create<ElementStore>((set, get) => ({
                 body: JSON.stringify({ id, ...updates }),
             });
 
-            if (!response.ok) throw new Error('Failed to update element');
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Update failed:', errorData);
+                throw new Error(errorData.error || 'Failed to update element');
+            }
         } catch (error) {
             // Revert on error
             set({ elements: previousElements });
             console.error('Error updating element:', error);
             set({ error: 'Failed to update element' });
-            throw error;
+            // Don't throw - allow optimistic UI to work
         }
     },
 
@@ -107,5 +142,125 @@ export const useElementStore = create<ElementStore>((set, get) => ({
             set({ error: 'Failed to delete element' });
             throw error;
         }
+    },
+
+    // History management
+    addToHistory: (entry: HistoryEntry) => {
+        const { history, historyIndex } = get();
+        const newHistory = history.slice(0, historyIndex + 1);
+        newHistory.push(entry);
+
+        // Limit history size
+        if (newHistory.length > MAX_HISTORY) {
+            newHistory.shift();
+        }
+
+        set({
+            history: newHistory,
+            historyIndex: newHistory.length - 1,
+        });
+    },
+
+    undo: () => {
+        const { history, historyIndex, elements } = get();
+        if (historyIndex < 0) return;
+
+        const entry = history[historyIndex];
+        let newElements = [...elements];
+
+        switch (entry.type) {
+            case 'add':
+                // Remove the added element
+                newElements = newElements.filter(el => el.id !== entry.elementId);
+                break;
+            case 'delete':
+                // Restore the deleted element
+                if (entry.before) {
+                    newElements.push(entry.before);
+                }
+                break;
+            case 'update':
+                // Revert to before state
+                if (entry.before) {
+                    newElements = newElements.map(el =>
+                        el.id === entry.elementId ? entry.before! : el
+                    );
+                }
+                break;
+        }
+
+        set({
+            elements: newElements,
+            historyIndex: historyIndex - 1,
+        });
+    },
+
+    redo: () => {
+        const { history, historyIndex, elements } = get();
+        if (historyIndex >= history.length - 1) return;
+
+        const entry = history[historyIndex + 1];
+        let newElements = [...elements];
+
+        switch (entry.type) {
+            case 'add':
+                // Re-add the element
+                if (entry.after) {
+                    newElements.push(entry.after);
+                }
+                break;
+            case 'delete':
+                // Re-delete the element
+                newElements = newElements.filter(el => el.id !== entry.elementId);
+                break;
+            case 'update':
+                // Apply the after state
+                if (entry.after) {
+                    newElements = newElements.map(el =>
+                        el.id === entry.elementId ? entry.after! : el
+                    );
+                }
+                break;
+        }
+
+        set({
+            elements: newElements,
+            historyIndex: historyIndex + 1,
+        });
+    },
+
+    canUndo: () => get().historyIndex >= 0,
+    canRedo: () => get().historyIndex < get().history.length - 1,
+
+    // Clipboard actions
+    copyElement: (id: string) => {
+        const element = get().elements.find(el => el.id === id);
+        if (element) {
+            set({ clipboard: element });
+        }
+    },
+
+    pasteElement: async (userId: string) => {
+        const { clipboard, elements } = get();
+        if (!clipboard) return;
+
+        // Create new element with offset position
+        const newElement: CreateElementInput = {
+            userId,
+            type: clipboard.type,
+            x: clipboard.x + 20,
+            y: clipboard.y + 20,
+            width: clipboard.width,
+            height: clipboard.height,
+            zIndex: elements.length,
+            props: { ...clipboard.props },
+        };
+
+        await get().addElement(newElement);
+    },
+
+    duplicateElement: async (id: string, userId: string) => {
+        get().copyElement(id);
+        await get().pasteElement(userId);
     },
 }));

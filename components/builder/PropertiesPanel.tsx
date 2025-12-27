@@ -14,7 +14,7 @@ interface PropertiesPanelProps {
  * PropertiesPanel - Right sidebar for editing element properties
  */
 export function PropertiesPanel({ element, isVisible, onClose }: PropertiesPanelProps) {
-    const { updateElement, deleteElement, elements } = useElementStore();
+    const { updateElement, deleteElement, elements, duplicateElement } = useElementStore();
 
     if (!isVisible || !element) return null;
 
@@ -29,7 +29,8 @@ export function PropertiesPanel({ element, isVisible, onClose }: PropertiesPanel
     };
 
     const handleDuplicate = () => {
-        // TODO: Implement duplication
+        // Get userId from element
+        duplicateElement(element.id, element.userId);
     };
 
     const handleBringForward = () => {
@@ -145,8 +146,8 @@ export function PropertiesPanel({ element, isVisible, onClose }: PropertiesPanel
                                     key={align}
                                     onClick={() => handlePropUpdate('align', align)}
                                     className={`flex-1 px-3 py-2 text-sm rounded border ${element.props.align === align
-                                            ? 'bg-blue-600 text-white border-blue-600'
-                                            : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
+                                        ? 'bg-blue-600 text-white border-blue-600'
+                                        : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
                                         }`}
                                 >
                                     {align}
@@ -166,8 +167,8 @@ export function PropertiesPanel({ element, isVisible, onClose }: PropertiesPanel
                                     key={variant}
                                     onClick={() => handlePropUpdate('variant', variant)}
                                     className={`px-3 py-2 text-sm rounded border capitalize ${element.props.variant === variant
-                                            ? 'bg-blue-600 text-white border-blue-600'
-                                            : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
+                                        ? 'bg-blue-600 text-white border-blue-600'
+                                        : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'
                                         }`}
                                 >
                                     {variant}
