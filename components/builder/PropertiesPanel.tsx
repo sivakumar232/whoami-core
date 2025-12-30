@@ -91,95 +91,85 @@ export function PropertiesPanel({ element, isVisible, onClose }: PropertiesPanel
     };
 
     return (
-        <div key={element.id} className="fixed right-0 top-0 h-screen w-80 bg-white border-l border-gray-200 shadow-lg z-20 overflow-y-auto">
-            {/* Header */}
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
-                <h2 className="text-lg font-bold text-gray-900">Properties</h2>
-                <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                    <X size={20} />
-                </button>
+        <div key={element.id} className="p-4 space-y-6">
+            {/* Element Type */}
+            <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase">Type</label>
+                <p className="text-sm text-gray-900 mt-1 capitalize">{element.type.replace('_', ' ')}</p>
             </div>
 
-            <div className="p-4 space-y-6">
-                {/* Element Type */}
-                <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase">Type</label>
-                    <p className="text-sm text-gray-900 mt-1 capitalize">{element.type.replace('_', ' ')}</p>
+            {/* Position & Size */}
+            <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Position & Size</h3>
+                <div className="grid grid-cols-2 gap-2">
+                    <NumberInput
+                        label="X"
+                        value={Math.round(element.x)}
+                        onChange={(value) => handleUpdate({ x: value })}
+                        unit="px"
+                    />
+                    <NumberInput
+                        label="Y"
+                        value={Math.round(element.y)}
+                        onChange={(value) => handleUpdate({ y: value })}
+                        unit="px"
+                    />
+                    <NumberInput
+                        label="Width"
+                        value={Math.round(element.width)}
+                        onChange={(value) => handleUpdate({ width: value })}
+                        unit="px"
+                    />
+                    <NumberInput
+                        label="Height"
+                        value={Math.round(element.height)}
+                        onChange={(value) => handleUpdate({ height: value })}
+                        unit="px"
+                    />
                 </div>
+            </div>
 
-                {/* Position & Size */}
-                <div>
-                    <h3 className="text-sm font-semibold text-gray-900 mb-3">Position & Size</h3>
-                    <div className="grid grid-cols-2 gap-2">
-                        <NumberInput
-                            label="X"
-                            value={Math.round(element.x)}
-                            onChange={(value) => handleUpdate({ x: value })}
-                            unit="px"
-                        />
-                        <NumberInput
-                            label="Y"
-                            value={Math.round(element.y)}
-                            onChange={(value) => handleUpdate({ y: value })}
-                            unit="px"
-                        />
-                        <NumberInput
-                            label="Width"
-                            value={Math.round(element.width)}
-                            onChange={(value) => handleUpdate({ width: value })}
-                            unit="px"
-                        />
-                        <NumberInput
-                            label="Height"
-                            value={Math.round(element.height)}
-                            onChange={(value) => handleUpdate({ height: value })}
-                            unit="px"
-                        />
-                    </div>
-                </div>
+            {/* Component-Specific Properties */}
+            {renderComponentProperties()}
 
-                {/* Component-Specific Properties */}
-                {renderComponentProperties()}
-
-                {/* Layer Controls */}
-                <div>
-                    <h3 className="text-sm font-semibold text-gray-900 mb-3">Layer</h3>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={handleBringForward}
-                            className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded hover:border-blue-500 flex items-center justify-center gap-2"
-                        >
-                            <ArrowUp size={14} />
-                            Forward
-                        </button>
-                        <button
-                            onClick={handleSendBackward}
-                            className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded hover:border-blue-500 flex items-center justify-center gap-2"
-                        >
-                            <ArrowDown size={14} />
-                            Backward
-                        </button>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">Z-index: {element.zIndex}</p>
-                </div>
-
-                {/* Actions */}
-                <div className="pt-4 border-t border-gray-200 space-y-2">
+            {/* Layer Controls */}
+            <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Layer</h3>
+                <div className="flex gap-2">
                     <button
-                        onClick={handleDuplicate}
-                        className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center gap-2"
+                        onClick={handleBringForward}
+                        className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded hover:border-blue-500 flex items-center justify-center gap-2"
                     >
-                        <Copy size={16} />
-                        Duplicate
+                        <ArrowUp size={14} />
+                        Forward
                     </button>
                     <button
-                        onClick={() => deleteElement(element.id)}
-                        className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 flex items-center justify-center gap-2"
+                        onClick={handleSendBackward}
+                        className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded hover:border-blue-500 flex items-center justify-center gap-2"
                     >
-                        <Trash2 size={16} />
-                        Delete
+                        <ArrowDown size={14} />
+                        Backward
                     </button>
                 </div>
+                <p className="text-xs text-gray-500 mt-1">Z-index: {element.zIndex}</p>
+            </div>
+
+            {/* Actions */}
+            <div className="pt-4 border-t border-gray-200 space-y-2">
+                <button
+                    onClick={handleDuplicate}
+                    className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center gap-2"
+                >
+                    <Copy size={16} />
+                    Duplicate
+                </button>
+                <button
+                    onClick={() => deleteElement(element.id)}
+                    className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 flex items-center justify-center gap-2"
+                >
+                    <Trash2 size={16} />
+                    Delete
+                </button>
             </div>
         </div>
     );

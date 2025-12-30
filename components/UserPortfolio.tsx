@@ -3,11 +3,13 @@
 import { useEffect } from 'react';
 import { Edit3, Eye } from 'lucide-react';
 import { useEditMode } from '@/lib/useEditMode';
+import { usePanelState } from '@/lib/hooks/usePanelState';
 import ProfileHeader from './ProfileHeader';
 import { Canvas } from './builder/Canvas';
 import { ElementLibrary } from './builder/ElementLibrary';
 import { PropertiesPanel } from './builder/PropertiesPanel';
-import { Toolbar } from './builder/Toolbar';
+import { FloatingPanel } from './builder/FloatingPanel';
+import { TopToolbar } from './builder/TopToolbar';
 import { useElementStore } from '@/lib/builder/useElementStore';
 
 interface UserPortfolioProps {
@@ -20,10 +22,11 @@ interface UserPortfolioProps {
 }
 
 /**
- * UserPortfolio - Visual builder with Canvas
+ * UserPortfolio - Visual builder with full-screen canvas and floating panels
  */
 export default function UserPortfolio({ profileOwner, isOwner }: UserPortfolioProps) {
     const { isEditMode, toggleEditMode, canEdit } = useEditMode(isOwner);
+    const { panels, togglePanel, updatePosition } = usePanelState();
     const { selectedId, setSelectedId, deleteElement, undo, redo, copyElement, pasteElement, duplicateElement } = useElementStore();
     const selectedElement = useElementStore(state =>
         state.elements.find(el => el.id === selectedId)
@@ -104,19 +107,48 @@ export default function UserPortfolio({ profileOwner, isOwner }: UserPortfolioPr
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Element Library - Left Sidebar */}
-            <ElementLibrary userId={profileOwner.id} isVisible={canEdit && isEditMode} />
-
-            {/* Properties Panel - Right Sidebar */}
-            <PropertiesPanel
-                element={selectedElement || null}
-                isVisible={canEdit && isEditMode && !!selectedId}
-                onClose={() => setSelectedId(null)}
-            />
-
-            {/* Toolbar - Top Center */}
+            {/* Top Toolbar - Only in edit mode */}
             {canEdit && isEditMode && (
-                <Toolbar userId={profileOwner.id} />
+                <TopToolbar
+                    onToggleElementLibrary={() => togglePanel('elementLibrary')}
+                    onToggleProperties={() => togglePanel('properties')}
+                    elementLibraryOpen={panels.elementLibrary.isOpen}
+                    propertiesOpen={panels.properties.isOpen}
+                />
+            )}
+
+            {/* Floating Element Library Panel */}
+            {canEdit && isEditMode && (
+                <FloatingPanel
+                    title="Elements"
+                    isOpen={panels.elementLibrary.isOpen}
+                    onToggle={() => togglePanel('elementLibrary')}
+                    position={panels.elementLibrary.position}
+                    onPositionChange={(pos) => updatePosition('elementLibrary', pos)}
+                    width={280}
+                    height={600}
+                >
+                    <ElementLibrary userId={profileOwner.id} isVisible={true} />
+                </FloatingPanel>
+            )}
+
+            {/* Floating Properties Panel */}
+            {canEdit && isEditMode && selectedElement && (
+                <FloatingPanel
+                    title="Properties"
+                    isOpen={panels.properties.isOpen}
+                    onToggle={() => togglePanel('properties')}
+                    position={panels.properties.position}
+                    onPositionChange={(pos) => updatePosition('properties', pos)}
+                    width={320}
+                    height={600}
+                >
+                    <PropertiesPanel
+                        element={selectedElement}
+                        isVisible={true}
+                        onClose={() => setSelectedId(null)}
+                    />
+                </FloatingPanel>
             )}
 
             {/* Edit Mode Toggle - Top Right */}
@@ -148,19 +180,19 @@ export default function UserPortfolio({ profileOwner, isOwner }: UserPortfolioPr
                 </div>
             )}
 
-            <div className={`container mx-auto px-4 py-8 max-w-5xl transition-all duration-300 
-                ${canEdit && isEditMode ? 'ml-64' : ''} 
-                ${canEdit && isEditMode && selectedId ? 'mr-80' : ''}
-            `}>
-                {/* Profile Header - Fixed Section */}
-                <ProfileHeader
-                    profileOwner={profileOwner}
-                    isEditable={isEditMode}
-                />
+            {/* Full-Screen Canvas Container */}
+            <div className={`${canEdit && isEditMode ? 'pt-16' : ''}`}>
+                <div className="container mx-auto px-4 py-8 max-w-5xl">
+                    {/* Profile Header - Fixed Section */}
+                    <ProfileHeader
+                        profileOwner={profileOwner}
+                        isEditable={isEditMode}
+                    />
 
-                {/* CANVAS - Visual builder area */}
-                <div className="mt-8">
-                    <Canvas userId={profileOwner.id} isEditMode={isEditMode} />
+                    {/* CANVAS - Full-screen visual builder area */}
+                    <div className="mt-8">
+                        <Canvas userId={profileOwner.id} isEditMode={isEditMode} />
+                    </div>
                 </div>
             </div>
         </div>

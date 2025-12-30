@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { Type, Image, Square, Minus, Briefcase, Tag, Link2, Layers, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Type, Image, Square, Minus, Briefcase, Tag, Link2, Layers } from 'lucide-react';
 import { useElementStore } from '@/lib/builder/useElementStore';
 
 interface ElementLibraryProps {
@@ -31,7 +30,6 @@ const ELEMENT_TYPES = [
  */
 export function ElementLibrary({ userId, isVisible }: ElementLibraryProps) {
     const { addElement, elements } = useElementStore();
-    const [isOpen, setIsOpen] = useState(true);
 
     if (!isVisible) return null;
 
@@ -69,50 +67,27 @@ export function ElementLibrary({ userId, isVisible }: ElementLibraryProps) {
     const categories = ['Basic', 'Portfolio', 'Layout'];
 
     return (
-        <>
-            {/* Toggle Button */}
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="fixed left-4 top-24 z-30 p-2 bg-white border border-gray-200 rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
-                title={isOpen ? 'Close Sidebar' : 'Open Sidebar'}
-            >
-                {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-            </button>
-
-            {/* Sidebar */}
-            <div
-                className={`fixed left-0 top-0 h-screen bg-white border-r border-gray-200 shadow-lg z-20 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'
-                    }`}
-                style={{ width: '280px' }}
-            >
-                <div className="p-4 border-b border-gray-200">
-                    <h2 className="text-lg font-bold text-gray-900">Elements</h2>
-                    <p className="text-xs text-gray-500 mt-1">Click to add</p>
+        <div className="p-4">
+            {categories.map((category) => (
+                <div key={category} className="mb-6">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">{category}</h3>
+                    <div className="space-y-2">
+                        {ELEMENT_TYPES.filter((el) => el.category === category).map((element) => {
+                            const Icon = element.icon;
+                            return (
+                                <button
+                                    key={element.type}
+                                    onClick={() => handleAddElement(element)}
+                                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                                >
+                                    <Icon size={20} className="text-gray-600" />
+                                    <span className="text-sm font-medium text-gray-700">{element.name}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
-
-                <div className="overflow-y-auto h-[calc(100vh-80px)] p-4">
-                    {categories.map((category) => (
-                        <div key={category} className="mb-6">
-                            <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">{category}</h3>
-                            <div className="space-y-2">
-                                {ELEMENT_TYPES.filter((el) => el.category === category).map((element) => {
-                                    const Icon = element.icon;
-                                    return (
-                                        <button
-                                            key={element.type}
-                                            onClick={() => handleAddElement(element)}
-                                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors text-left"
-                                        >
-                                            <Icon size={20} className="text-gray-600" />
-                                            <span className="text-sm font-medium text-gray-700">{element.name}</span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </>
+            ))}
+        </div>
     );
 }
