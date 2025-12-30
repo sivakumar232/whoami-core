@@ -71,7 +71,23 @@ export const useElementStore = create<ElementStore>((set, get) => ({
     },
 
     addElement: async (element: CreateElementInput) => {
+        // Generate temporary ID
+        const tempId = `temp-${Date.now()}-${Math.random()}`;
+        const tempElement = {
+            ...element,
+            id: tempId,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        } as ElementData;
+
+        // 1. OPTIMISTIC UPDATE - Show element immediately
+        set((state) => ({
+            elements: [...state.elements, tempElement],
+            selectedId: tempId,
+        }));
+
         try {
+            // 2. Save to database in background
             const response = await fetch('/api/elements', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -81,13 +97,24 @@ export const useElementStore = create<ElementStore>((set, get) => ({
             if (!response.ok) throw new Error('Failed to add element');
 
             const { element: newElement } = await response.json();
+
+            // 3. Replace temp element with real one from database
             set((state) => ({
-                elements: [...state.elements, newElement],
+                elements: state.elements.map(el =>
+                    el.id === tempId ? newElement : el
+                ),
                 selectedId: newElement.id,
             }));
+
+            console.log('✅ Element added:', newElement.id);
         } catch (error) {
+            // 4. Remove temp element on error
+            set((state) => ({
+                elements: state.elements.filter(el => el.id !== tempId),
+                selectedId: null,
+                error: 'Failed to add element',
+            }));
             console.error('Error adding element:', error);
-            set({ error: 'Failed to add element' });
             throw error;
         }
     },
@@ -163,24 +190,37 @@ export const useElementStore = create<ElementStore>((set, get) => ({
     },
 
     deleteElement: async (id: string) => {
-        // Optimistic delete
+        // Check if it's a temporary element
+        const isTemp = id.startsWith('temp-');
+
+        // Optimistic delete - remove from UI immediately
         const previousElements = get().elements;
         set((state) => ({
             elements: state.elements.filter((el) => el.id !== id),
-            selectedId: state.selectedId === id ? null : state.selectedId,
+            selectedId: null,
         }));
 
+        // If it's a temp element, don't try to delete from database
+        if (isTemp) {
+            console.log('Deleted temporary element:', id);
+            return;
+        }
+
+        // For real elements, delete from database
         try {
             const response = await fetch(`/api/elements?id=${id}`, {
                 method: 'DELETE',
             });
 
-            if (!response.ok) throw new Error('Failed to delete element');
+            if (!response.ok) {
+                throw new Error('Failed to delete element');
+            }
+
+            console.log('✅ Deleted element:', id);
         } catch (error) {
-            // Revert on error
+            // Restore element on error
             set({ elements: previousElements });
             console.error('Error deleting element:', error);
-            set({ error: 'Failed to delete element' });
             throw error;
         }
     },
