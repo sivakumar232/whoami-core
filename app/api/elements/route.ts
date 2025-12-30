@@ -86,8 +86,23 @@ export async function PATCH(request: NextRequest) {
     try {
         const { userId: clerkId } = await auth();
 
-        const body = await request.json();
+        // Read body safely
+        const text = await request.text();
+        if (!text) {
+            return NextResponse.json({ error: 'Request body is empty' }, { status: 400 });
+        }
+
+        let body;
+        try {
+            body = JSON.parse(text);
+        } catch (e) {
+            console.error('JSON parse error:', e);
+            return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+        }
+
         const { id, ...updates } = body;
+
+        console.log(`[PATCH] Updating element ${id}`, updates);
 
         if (!id) {
             return NextResponse.json({ error: 'Element ID is required' }, { status: 400 });
@@ -116,6 +131,11 @@ export async function PATCH(request: NextRequest) {
             if (key in updates) {
                 filteredUpdates[key] = updates[key];
             }
+        }
+
+        if (Object.keys(filteredUpdates).length === 0) {
+            console.warn('[PATCH] No valid updates found');
+            return NextResponse.json({ element }); // Nothing to update
         }
 
         const updatedElement = await prisma.element.update({
