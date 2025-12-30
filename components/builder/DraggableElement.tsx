@@ -75,39 +75,12 @@ export function DraggableElement({ element, isSelected, isEditMode, onSelect }: 
         updateElement(element.id, { props: newProps });
     };
 
-    const handleResize = (position: string, deltaX: number, deltaY: number) => {
-        let newX = element.x;
-        let newY = element.y;
-        let newWidth = element.width;
-        let newHeight = element.height;
-
-        // Handle horizontal resize
-        if (position.includes('e')) {
-            newWidth = Math.max(MIN_WIDTH, element.width + deltaX);
-        } else if (position.includes('w')) {
-            const widthChange = -deltaX;
-            if (element.width + widthChange >= MIN_WIDTH) {
-                newX = element.x + deltaX;
-                newWidth = element.width + widthChange;
-            }
-        }
-
-        // Handle vertical resize
-        if (position.includes('s')) {
-            newHeight = Math.max(MIN_HEIGHT, element.height + deltaY);
-        } else if (position.includes('n')) {
-            const heightChange = -deltaY;
-            if (element.height + heightChange >= MIN_HEIGHT) {
-                newY = element.y + deltaY;
-                newHeight = element.height + heightChange;
-            }
-        }
-
+    const handleResize = (position: string, newWidth: number, newHeight: number, newX: number, newY: number) => {
         updateElement(element.id, {
             x: newX,
             y: newY,
-            width: newWidth,
-            height: newHeight,
+            width: Math.max(MIN_WIDTH, newWidth),
+            height: Math.max(MIN_HEIGHT, newHeight),
         });
     };
 
@@ -153,14 +126,14 @@ export function DraggableElement({ element, isSelected, isEditMode, onSelect }: 
             {/* Resize handles - 8 directions */}
             {isSelected && isEditMode && (
                 <>
-                    <ResizeHandle position="n" onResize={handleResize} />
-                    <ResizeHandle position="s" onResize={handleResize} />
-                    <ResizeHandle position="e" onResize={handleResize} />
-                    <ResizeHandle position="w" onResize={handleResize} />
-                    <ResizeHandle position="ne" onResize={handleResize} />
-                    <ResizeHandle position="nw" onResize={handleResize} />
-                    <ResizeHandle position="se" onResize={handleResize} />
-                    <ResizeHandle position="sw" onResize={handleResize} />
+                    <ResizeHandle position="n" onResize={handleResize} elementX={element.x} elementY={element.y} elementWidth={element.width} elementHeight={element.height} />
+                    <ResizeHandle position="s" onResize={handleResize} elementX={element.x} elementY={element.y} elementWidth={element.width} elementHeight={element.height} />
+                    <ResizeHandle position="e" onResize={handleResize} elementX={element.x} elementY={element.y} elementWidth={element.width} elementHeight={element.height} />
+                    <ResizeHandle position="w" onResize={handleResize} elementX={element.x} elementY={element.y} elementWidth={element.width} elementHeight={element.height} />
+                    <ResizeHandle position="ne" onResize={handleResize} elementX={element.x} elementY={element.y} elementWidth={element.width} elementHeight={element.height} />
+                    <ResizeHandle position="nw" onResize={handleResize} elementX={element.x} elementY={element.y} elementWidth={element.width} elementHeight={element.height} />
+                    <ResizeHandle position="se" onResize={handleResize} elementX={element.x} elementY={element.y} elementWidth={element.width} elementHeight={element.height} />
+                    <ResizeHandle position="sw" onResize={handleResize} elementX={element.x} elementY={element.y} elementWidth={element.width} elementHeight={element.height} />
                 </>
             )}
         </div>

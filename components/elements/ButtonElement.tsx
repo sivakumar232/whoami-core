@@ -131,7 +131,8 @@ export function ButtonElement({
         fontWeight,
         textTransform: textTransform as any,
         boxShadow: shadowIntensity > 0 ? `0 ${shadowIntensity}px ${shadowIntensity * 2}px rgba(0,0,0,0.1)` : 'none',
-        width: fullWidth ? '100%' : 'auto',
+        width: '100%',  // Fill parent container
+        height: '100%', // Fill parent container
         opacity: disabled ? 0.5 : 1,
         cursor: disabled ? 'not-allowed' : (isEditable ? 'text' : 'pointer'),
     };
