@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { Edit3, Eye } from 'lucide-react';
 import { useEditMode } from '@/lib/useEditMode';
 import { usePanelState } from '@/lib/hooks/usePanelState';
-import ProfileHeader from './ProfileHeader';
 import { Canvas } from './builder/Canvas';
 import { ElementLibrary } from './builder/ElementLibrary';
 import { PropertiesPanel } from './builder/PropertiesPanel';
@@ -181,19 +180,9 @@ export default function UserPortfolio({ profileOwner, isOwner }: UserPortfolioPr
             )}
 
             {/* Full-Screen Canvas Container */}
-            <div className={`${canEdit && isEditMode ? 'pt-16' : ''}`}>
-                <div className="container mx-auto px-4 py-8 max-w-5xl">
-                    {/* Profile Header - Fixed Section */}
-                    <ProfileHeader
-                        profileOwner={profileOwner}
-                        isEditable={isEditMode}
-                    />
-
-                    {/* CANVAS - Full-screen visual builder area */}
-                    <div className="mt-8">
-                        <Canvas userId={profileOwner.id} isEditMode={isEditMode} />
-                    </div>
-                </div>
+            <div className={`w-full ${canEdit && isEditMode ? 'pt-16' : ''}`}>
+                {/* CANVAS - Full-width, infinite vertical */}
+                <Canvas userId={profileOwner.id} isEditMode={isEditMode} />
             </div>
         </div>
     );

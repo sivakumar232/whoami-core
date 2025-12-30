@@ -10,10 +10,10 @@ interface CanvasProps {
 }
 
 /**
- * Canvas - Free-form canvas where elements can be positioned anywhere
+ * Canvas - Full-width infinite vertical canvas for elements
  */
 export function Canvas({ userId, isEditMode }: CanvasProps) {
-    const { elements, selectedId, setSelectedId, fetchElements } = useElementStore();
+    const { elements, fetchElements, selectedId, setSelectedId } = useElementStore();
 
     useEffect(() => {
         fetchElements(userId);
@@ -28,16 +28,35 @@ export function Canvas({ userId, isEditMode }: CanvasProps) {
 
     return (
         <div
-            className="relative w-full min-h-[800px] bg-white"
+            className={`
+                relative w-full min-h-screen
+                ${isEditMode ? 'bg-gray-50' : 'bg-white'}
+                transition-colors duration-300
+            `}
             onClick={handleCanvasClick}
         >
+            {/* Grid background in edit mode */}
+            {isEditMode && (
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        backgroundImage: `
+                            linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+                            linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
+                        `,
+                        backgroundSize: '20px 20px',
+                        opacity: 0.3,
+                    }}
+                />
+            )}
+
             {/* Empty state */}
             {elements.length === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center text-gray-400">
                     <div className="text-center">
-                        <p className="text-lg">Empty Canvas</p>
+                        <p className="text-lg font-medium">Empty Canvas</p>
                         {isEditMode && (
-                            <p className="text-sm mt-2">Add elements from the sidebar</p>
+                            <p className="text-sm mt-2">Add elements from the library to get started</p>
                         )}
                     </div>
                 </div>
