@@ -92,6 +92,13 @@ export const useElementStore = create<ElementStore>((set, get) => ({
     },
 
     updateElement: async (id: string, updates: UpdateElementInput) => {
+        // Check if element exists first
+        const elementExists = get().elements.find(el => el.id === id);
+        if (!elementExists) {
+            console.error('Element not found:', id);
+            return; // Silently fail if element doesn't exist
+        }
+
         // Optimistic update
         const previousElements = get().elements;
         set((state) => ({
@@ -108,7 +115,15 @@ export const useElementStore = create<ElementStore>((set, get) => ({
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
+                let errorData;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    errorData = await response.json().catch(() => ({}));
+                } else {
+                    const text = await response.text();
+                    console.error('Update failed (non-JSON):', response.status, text);
+                    throw new Error(`Update failed: ${response.status} ${text.substring(0, 100)}`);
+                }
                 console.error('Update failed:', errorData);
                 throw new Error(errorData.error || 'Failed to update element');
             }
@@ -116,8 +131,11 @@ export const useElementStore = create<ElementStore>((set, get) => ({
             // Revert on error
             set({ elements: previousElements });
             console.error('Error updating element:', error);
-            set({ error: 'Failed to update element' });
             // Don't throw - allow optimistic UI to work
+            if (error instanceof Error && error.message.includes('Update failed')) {
+                // If it was our detailed error, log it specifically
+                console.error('Detailed update error:', error.message);
+            }
         }
     },
 

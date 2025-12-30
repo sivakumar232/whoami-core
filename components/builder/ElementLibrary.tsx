@@ -1,6 +1,7 @@
 'use client';
 
-import { Plus, Type, Image, Square, Minus, Briefcase, Tag, Link2, Layers } from 'lucide-react';
+import { useState } from 'react';
+import { Type, Image, Square, Minus, Briefcase, Tag, Link2, Layers, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useElementStore } from '@/lib/builder/useElementStore';
 
 interface ElementLibraryProps {
@@ -26,60 +27,92 @@ const ELEMENT_TYPES = [
 ];
 
 /**
- * ElementLibrary - Clean sidebar with element types
+ * ElementLibrary - Collapsible sidebar with element types
  */
 export function ElementLibrary({ userId, isVisible }: ElementLibraryProps) {
     const { addElement, elements } = useElementStore();
-
-    const handleAddElement = async (type: string) => {
-        const offset = elements.length * 20;
-        const elementType = ELEMENT_TYPES.find(el => el.type === type);
-
-        await addElement({
-            userId,
-            type,
-            x: 100 + offset,
-            y: 100 + offset,
-            width: elementType?.width || 200,
-            height: elementType?.height || 100,
-            zIndex: elements.length,
-            props: {},
-        });
-    };
+    const [isOpen, setIsOpen] = useState(true);
 
     if (!isVisible) return null;
 
-    return (
-        <div className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 shadow-sm z-20 overflow-y-auto">
-            <div className="p-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Elements</h2>
-                <p className="text-xs text-gray-500 mt-1">Click to add to canvas</p>
-            </div>
+    const handleAddElement = (elementType: any) => {
+        const newElement = {
+            id: `temp-${Date.now()}`,
+            type: elementType.type,
+            x: 100,
+            y: 100,
+            width: elementType.width,
+            height: elementType.height,
+            zIndex: elements.length,
+            userId,
+            props: getDefaultProps(elementType.type),
+        };
 
-            {['Basic', 'Portfolio', 'Layout'].map(category => (
-                <div key={category} className="p-4">
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                        {category}
-                    </h3>
-                    <div className="space-y-2">
-                        {ELEMENT_TYPES
-                            .filter(el => el.category === category)
-                            .map(({ type, name, icon: Icon }) => (
-                                <button
-                                    key={type}
-                                    onClick={() => handleAddElement(type)}
-                                    className="w-full text-left px-3 py-2.5 rounded-md border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-all group flex items-center gap-3"
-                                >
-                                    <Icon className="h-4 w-4 text-gray-600 group-hover:text-blue-600" />
-                                    <span className="flex-1 text-sm font-medium text-gray-700 group-hover:text-blue-700">
-                                        {name}
-                                    </span>
-                                    <Plus className="h-4 w-4 text-gray-400 group-hover:text-blue-500" />
-                                </button>
-                            ))}
-                    </div>
+        addElement(newElement);
+    };
+
+    const getDefaultProps = (type: string) => {
+        const defaults: Record<string, any> = {
+            heading: { text: 'Heading', level: 1, color: '#000000', align: 'left' },
+            text_block: { content: 'Your text here...', fontSize: 16, color: '#000000', align: 'left' },
+            button: { text: 'Button', variant: 'primary', size: 'md', url: '#' },
+            image: { url: '', alt: 'Image', fit: 'cover' },
+            divider: { style: 'solid', color: '#e5e7eb', thickness: 2 },
+            project_card: { title: 'Project', description: 'Description', image: '' },
+            skill_tag: { name: 'Skill', level: 'intermediate' },
+            social_links: { github: '', linkedin: '', twitter: '' },
+            container: { display: 'flex', gap: 16, padding: 16 },
+        };
+        return defaults[type] || {};
+    };
+
+    const categories = ['Basic', 'Portfolio', 'Layout'];
+
+    return (
+        <>
+            {/* Toggle Button */}
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="fixed left-4 top-24 z-30 p-2 bg-white border border-gray-200 rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
+                title={isOpen ? 'Close Sidebar' : 'Open Sidebar'}
+            >
+                {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+            </button>
+
+            {/* Sidebar */}
+            <div
+                className={`fixed left-0 top-0 h-screen bg-white border-r border-gray-200 shadow-lg z-20 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                    }`}
+                style={{ width: '280px' }}
+            >
+                <div className="p-4 border-b border-gray-200">
+                    <h2 className="text-lg font-bold text-gray-900">Elements</h2>
+                    <p className="text-xs text-gray-500 mt-1">Click to add</p>
                 </div>
-            ))}
-        </div>
+
+                <div className="overflow-y-auto h-[calc(100vh-80px)] p-4">
+                    {categories.map((category) => (
+                        <div key={category} className="mb-6">
+                            <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">{category}</h3>
+                            <div className="space-y-2">
+                                {ELEMENT_TYPES.filter((el) => el.category === category).map((element) => {
+                                    const Icon = element.icon;
+                                    return (
+                                        <button
+                                            key={element.type}
+                                            onClick={() => handleAddElement(element)}
+                                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                                        >
+                                            <Icon size={20} className="text-gray-600" />
+                                            <span className="text-sm font-medium text-gray-700">{element.name}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </>
     );
 }

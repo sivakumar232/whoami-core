@@ -13,8 +13,8 @@ export default function OnboardingPage() {
     const [error, setError] = useState('')
     const [checking, setChecking] = useState(true)
 
+    // Check if user already has a username
     useEffect(() => {
-        // Check if user already has a username
         const checkExistingUser = async () => {
             if (!user) return
 
@@ -28,7 +28,7 @@ export default function OnboardingPage() {
                 const data = await response.json()
 
                 if (data.exists && data.username) {
-                    // User already has a username, redirect to their profile
+                    // User already has username, redirect to profile
                     router.push(`/${data.username}`)
                 } else {
                     setChecking(false)
