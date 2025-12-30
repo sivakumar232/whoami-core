@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { ElementData, CreateElementInput, UpdateElementInput } from './types';
+import '../builder/flushOnUnload'; // Flush pending saves on page unload
 
 interface HistoryEntry {
     type: 'add' | 'delete' | 'update';
@@ -96,10 +97,10 @@ export const useElementStore = create<ElementStore>((set, get) => ({
         const elementExists = get().elements.find(el => el.id === id);
         if (!elementExists) {
             console.error('Element not found:', id);
-            return; // Silently fail if element doesn't exist
+            return;
         }
 
-        // Optimistic update
+        // 1. OPTIMISTIC UPDATE - Update UI instantly
         const previousElements = get().elements;
         set((state) => ({
             elements: state.elements.map((el) =>
@@ -107,36 +108,58 @@ export const useElementStore = create<ElementStore>((set, get) => ({
             ),
         }));
 
-        try {
-            const response = await fetch('/api/elements', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, ...updates }),
-            });
+        // 2. DEBOUNCED SAVE - Batch updates and save after 300ms
+        const saveKey = `save_${id}`;
 
-            if (!response.ok) {
-                let errorData;
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    errorData = await response.json().catch(() => ({}));
-                } else {
-                    const text = await response.text();
-                    console.error('Update failed (non-JSON):', response.status, text);
-                    throw new Error(`Update failed: ${response.status} ${text.substring(0, 100)}`);
-                }
-                console.error('Update failed:', errorData);
-                throw new Error(errorData.error || 'Failed to update element');
-            }
-        } catch (error) {
-            // Revert on error
-            set({ elements: previousElements });
-            console.error('Error updating element:', error);
-            // Don't throw - allow optimistic UI to work
-            if (error instanceof Error && error.message.includes('Update failed')) {
-                // If it was our detailed error, log it specifically
-                console.error('Detailed update error:', error.message);
-            }
+        // Clear existing timer for this element
+        if ((globalThis as any)[saveKey]) {
+            clearTimeout((globalThis as any)[saveKey]);
         }
+
+        // Merge with pending updates
+        const pendingKey = `pending_${id}`;
+        const existingPending = (globalThis as any)[pendingKey] || {};
+        const mergedUpdates = { ...existingPending, ...updates };
+        (globalThis as any)[pendingKey] = mergedUpdates;
+
+        // Set new debounced timer (300ms)
+        (globalThis as any)[saveKey] = setTimeout(async () => {
+            const finalUpdates = (globalThis as any)[pendingKey];
+
+            try {
+                const response = await fetch('/api/elements', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, ...finalUpdates }),
+                });
+
+                if (!response.ok) {
+                    let errorData;
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        errorData = await response.json().catch(() => ({}));
+                    } else {
+                        const text = await response.text();
+                        console.error('Update failed (non-JSON):', response.status, text);
+                        throw new Error(`Update failed: ${response.status}`);
+                    }
+                    console.error('Update failed:', errorData);
+                    throw new Error(errorData.error || 'Failed to update element');
+                }
+
+                // Clear pending updates on success
+                delete (globalThis as any)[pendingKey];
+                delete (globalThis as any)[saveKey];
+
+                console.log(`✅ Saved element ${id} with updates:`, finalUpdates);
+            } catch (error) {
+                // Revert on error
+                set({ elements: previousElements });
+                console.error('Error updating element:', error);
+                delete (globalThis as any)[pendingKey];
+                delete (globalThis as any)[saveKey];
+            }
+        }, 300); // 300ms debounce delay
     },
 
     deleteElement: async (id: string) => {
