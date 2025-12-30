@@ -32,6 +32,13 @@ export function TextInput({
                     type={type}
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
+                    onPaste={(e) => {
+                        // Explicitly allow paste
+                        const pastedText = e.clipboardData.getData('text');
+                        if (pastedText) {
+                            onChange(pastedText);
+                        }
+                    }}
                     placeholder={placeholder}
                     className={`w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${icon ? 'pl-10' : ''
                         }`}
