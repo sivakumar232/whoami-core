@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { validateUsername, sanitizeUsername } from '@/lib/validation/username'
+import { APIError, handleAPIError } from '@/lib/errors/APIError'
 
 export async function POST(request: NextRequest) {
     try {
@@ -9,19 +11,25 @@ export async function POST(request: NextRequest) {
         console.log('[API /user POST] Received request:', { clerkId, username, email })
 
         if (!clerkId || !username || !email) {
-            return NextResponse.json(
-                { error: 'Missing required fields' },
-                { status: 400 }
-            )
+            throw new APIError(400, 'Missing required fields', 'MISSING_FIELDS')
         }
+
+        // Validate username
+        const validation = validateUsername(username)
+        if (!validation.valid) {
+            throw new APIError(400, validation.error!, 'INVALID_USERNAME')
+        }
+
+        // Sanitize username
+        const sanitizedUsername = sanitizeUsername(username)
 
         // Check if username is already taken
         const existingUser = await prisma.user.findUnique({
-            where: { username: username.toLowerCase() },
+            where: { username: sanitizedUsername },
         })
 
         console.log('[API /user POST] Username check:', {
-            username: username.toLowerCase(),
+            username: sanitizedUsername,
             exists: !!existingUser,
             existingUserClerkId: existingUser?.clerkId
         })
@@ -59,7 +67,7 @@ export async function POST(request: NextRequest) {
         const user = await prisma.user.create({
             data: {
                 clerkId,
-                username: username.toLowerCase(),
+                username: sanitizedUsername,
                 email,
             },
         })
@@ -68,10 +76,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ user }, { status: 201 })
     } catch (error) {
-        console.error('Error creating user:', error)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        const { body, status } = handleAPIError(error)
+        return NextResponse.json(body, { status })
     }
 }

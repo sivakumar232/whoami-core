@@ -4,6 +4,7 @@ import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Sparkles } from 'lucide-react'
+import { validateUsername, sanitizeUsername } from '@/lib/validation/username'
 
 export default function OnboardingPage() {
     const { user } = useUser()
@@ -12,6 +13,7 @@ export default function OnboardingPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [checking, setChecking] = useState(true)
+    const [validationError, setValidationError] = useState('')
 
     // Check if user already has a username
     useEffect(() => {
@@ -42,20 +44,25 @@ export default function OnboardingPage() {
         checkExistingUser()
     }, [user, router])
 
+    // Validate username as user types
+    useEffect(() => {
+        if (username) {
+            const validation = validateUsername(username)
+            setValidationError(validation.valid ? '' : validation.error!)
+        } else {
+            setValidationError('')
+        }
+    }, [username])
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
         setLoading(true)
 
-        // Validate username
-        if (username.length < 3) {
-            setError('Username must be at least 3 characters long')
-            setLoading(false)
-            return
-        }
-
-        if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
-            setError('Username can only contain letters, numbers, hyphens, and underscores')
+        // Final validation
+        const validation = validateUsername(username)
+        if (!validation.valid) {
+            setError(validation.error!)
             setLoading(false)
             return
         }
@@ -136,7 +143,12 @@ export default function OnboardingPage() {
                                     disabled={loading}
                                 />
                             </div>
-                            {username && (
+                            {validationError && (
+                                <p className="mt-2 text-sm font-bold text-red-600 bg-red-50 border-2 border-red-600 p-2 rounded">
+                                    ⚠️ {validationError}
+                                </p>
+                            )}
+                            {username && !validationError && (
                                 <p className="mt-3 text-sm font-bold text-black bg-white border-[3px] border-black p-3 inline-block">
                                     Your link: <span className="text-neo-pink">whoami.com/{username.toLowerCase()}</span>
                                 </p>
