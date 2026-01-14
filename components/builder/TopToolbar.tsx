@@ -1,6 +1,6 @@
 'use client';
 
-import { Layers, Settings, ZoomIn, ZoomOut, Maximize2, RotateCcw, RotateCw, Eye } from 'lucide-react';
+import { Layers, Settings, ZoomIn, ZoomOut, Maximize2, Eye } from 'lucide-react';
 
 interface TopToolbarProps {
     onToggleElementLibrary: () => void;
@@ -22,8 +22,8 @@ export function TopToolbar({
                 <button
                     onClick={onToggleElementLibrary}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${elementLibraryOpen
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                     title="Toggle Element Library"
                 >
@@ -34,8 +34,8 @@ export function TopToolbar({
                 <button
                     onClick={onToggleProperties}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${propertiesOpen
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                     title="Toggle Properties Panel"
                 >

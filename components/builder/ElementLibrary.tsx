@@ -33,7 +33,7 @@ export function ElementLibrary({ userId, isVisible }: ElementLibraryProps) {
 
     if (!isVisible) return null;
 
-    const handleAddElement = (elementType: any) => {
+    const handleAddElement = (elementType: typeof ELEMENT_TYPES[number]) => {
         const newElement = {
             id: `temp-${Date.now()}`,
             type: elementType.type,

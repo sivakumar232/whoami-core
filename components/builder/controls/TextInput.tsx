@@ -1,6 +1,4 @@
-'use client';
 
-import { Link2 } from 'lucide-react';
 
 interface TextInputProps {
     label: string;

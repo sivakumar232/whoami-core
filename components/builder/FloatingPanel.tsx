@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Minus, GripVertical } from 'lucide-react';
+import { X, GripVertical } from 'lucide-react';
 import { useDraggable } from '@/lib/hooks/useDraggable';
 
 interface FloatingPanelProps {

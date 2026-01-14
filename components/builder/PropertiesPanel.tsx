@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Trash2, Copy, ArrowUp, ArrowDown } from 'lucide-react';
+import { Trash2, Copy, ArrowUp, ArrowDown } from 'lucide-react';
 import { useElementStore } from '@/lib/builder/useElementStore';
 import { ElementData } from '@/lib/builder/types';
 import { ButtonProperties } from './properties/ButtonProperties';
@@ -32,7 +32,7 @@ export function PropertiesPanel({ element, isVisible, onClose }: PropertiesPanel
         updateElement(element.id, updates);
     };
 
-    const handlePropUpdate = (key: string, value: any) => {
+    const handlePropUpdate = (key: string, value: string | number | boolean | object) => {
         updateElement(element.id, {
             props: { ...element.props, [key]: value },
         });
